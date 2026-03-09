@@ -5,6 +5,7 @@ import org.leaf.roblox.RobloxPlayer;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PmCommand extends Command {
     private List<RobloxPlayer> targets = new ArrayList<>();
@@ -29,22 +30,19 @@ public class PmCommand extends Command {
 
         super(raw, "pm", sender, timestamp);
 
-        raw = raw.substring(raw.indexOf(" ") + 1);
+        raw = raw.substring(raw.indexOf(" ") + 1).strip();
         StringBuilder targetBuilder = new StringBuilder();
 
         while (!raw.isEmpty()) {
             if (raw.charAt(0) == ' ') {
                 break;
             }
-            else if (raw.charAt(0) == ',') {
-                targets.add(RobloxPlayer.fromUsername(targetBuilder.toString()));
-                targetBuilder.setLength(0);
-            }
-            else {
-                targetBuilder.append(raw.charAt(0));
-            }
+            targetBuilder.append(raw.charAt(0));
             raw = raw.substring(1);
         }
+
+        //TODO: Replace this with a proper player getter from the Cache, which defaults to an unknown player if the command has been sent too long ago.
+        if (!targetBuilder.isEmpty()) targets = Stream.of(targetBuilder.toString().split(",")).map(s -> new RobloxPlayer(s, 0)).toList();
 
         raw = raw.substring(1);
 

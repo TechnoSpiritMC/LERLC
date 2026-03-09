@@ -7,7 +7,7 @@ public class Main {
     public static final Logger logger = Logger.getLogger("Leaf");
 
     public static void main(String[] args) {
-
+            return;
         }
     }
 }

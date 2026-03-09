@@ -75,5 +75,13 @@ public class Context {
 
         averageLatency = Duration.ofMillis(latencies.stream().mapToLong(Duration::toMillis).sum() / latencies.size());
         Main.logger.info("Finished API Latency checks. Computed average latency: " + averageLatency.toMillis() + "ms.");
+
+        if (averageLatency.toSeconds() >= 5) {
+            Main.logger.severe("Average latency is " + averageLatency.toSeconds() + " seconds! This is more than 5 seconds, and this is a lot! Please check your internet connection. Some caching features might not work as expected!");
+        }
+    }
+
+    public Duration getAverageLatency() {
+        return averageLatency;
     }
 }

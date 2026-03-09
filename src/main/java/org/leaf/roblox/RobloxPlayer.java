@@ -88,6 +88,58 @@ public class RobloxPlayer {
         return permission.isHigherThan(other.permission);
     }
 
+    /// Flags are used to explicitly provide details about the object. It can be used to tell if the object was
+    /// initialized using only a player ID, or if the user has left the server. Flags are mostly used internally but can also
+    /// be used by the user. Below is a table detailing their meaning. <b>Please note that flags may not be available for all {@link RobloxPlayer} objects!</b>
+    /// <br>
+    /// <br>
+    ///
+    /// <table style="border-collapse: collapse;">
+    /// <tr>
+    ///   <th style="border:1px solid gray;padding:4px;">Flag bit</th>
+    ///   <th style="border:1px solid gray;padding:4px;">Description</th>
+    /// </tr>
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 00000001}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">Initialized using only a user ID.</td>
+    /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 00000010}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">Initialized using only a username.</td>
+    /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 00000100}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">User is no longer online.
+    ///     <br><br><i>Please note that player objects are kept in<br> the cache for 10 minutes after they left.<br>While they are cached and not in game,<br>this flag will automatically be set.</i></td>
+    /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 00001000}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">User is the server owner. <br><br><i>Please note that this is equivalent to:<br>{@code getPermission() ->} {@link Permission#OWNER}</i></td>
+    /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 00010000}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">User is banned.</td>
+    /// </tr>
+    /// </table>
+    ///
+    public byte getFlags() {
+        return flags;
+    }
+
+    /// Returns an {@link Instant} corresponding the last time this player was seen online. Please note that: {@code if(p.getLastSeen() > 30 seconds)} the player is considered as offline.
+    public Instant getLastSeen() {
+        return lastSeen;
+    }
+
+    /// Sets the last time this player was seen online. <b>This is meant to be used only by the Cache, and not by the user!</b>
+    public void setLastSeen(Instant lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
     @Override
     public String toString() {
         return username + " (" + userId + ")";

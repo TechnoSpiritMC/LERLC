@@ -12,9 +12,12 @@ public abstract class Command {
     private final RobloxPlayer sender;
     private final Instant timestamp;
 
-    /// Create a command providing explicitly the raw command, and its parsed version, detailing the true command and its arguments.
+    private final CommandName commandName;
+
+    /// Generic constructor for an ERLC Command.
     protected Command(String raw,
                       String name,
+                      CommandName commandName,
                       RobloxPlayer sender,
                       Instant timestamp) {
 
@@ -22,6 +25,7 @@ public abstract class Command {
         this.name = name;
         this.sender = sender;
         this.timestamp = timestamp;
+        this.commandName = commandName;
     }
 
     /// Getter for the raw command executed. This returns the command provided by the API. (i.e. {@code :kick john Kicked for 2 hours for RDM.})
@@ -34,7 +38,8 @@ public abstract class Command {
         return name;
     }
 
-    /// Returns an instance of {@link RobloxPlayer} representing the player who executed the command. Please note that their permission level will be deduced from the command they ran. (i.e., a ban command will make the sender appear as an {@link org.leaf.roblox.Permission#ADMINISTRATOR})
+    /// Returns an instance of {@link RobloxPlayer} representing the player who executed the command.
+    /// Please note that their permission level will be deduced from the command they ran. (i.e., a ban command will make the sender appear as an {@link org.leaf.roblox.Permission#ADMINISTRATOR})
     public RobloxPlayer getSender() {
         return sender;
     }
@@ -42,5 +47,10 @@ public abstract class Command {
     /// Returns the timestamp of when the command was executed.
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+
+    public CommandName getCommandName() {
+        return commandName;
     }
 }

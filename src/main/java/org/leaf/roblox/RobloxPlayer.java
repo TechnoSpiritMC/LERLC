@@ -1,5 +1,7 @@
 package org.leaf.roblox;
 
+import org.leaf.Main;
+
 import java.time.Instant;
 
 public class RobloxPlayer {
@@ -13,6 +15,14 @@ public class RobloxPlayer {
     public RobloxPlayer(String username, long userId) {
         this.username = username;
         this.userId = userId;
+    }
+
+    /// Creates a new {@link RobloxPlayer} with the given username. They can be compared on the hashCode of their username.
+    public RobloxPlayer(String username) {
+        this.username = username;
+        this.userId = username.hashCode();
+
+        this.flags = 0b00000010;
     }
 
     /// Creates a new {@link RobloxPlayer} with the given username and id. They can be compared based on their user id.<br>
@@ -140,25 +150,64 @@ public class RobloxPlayer {
         this.lastSeen = lastSeen;
     }
 
+    /// Compares two {@link RobloxPlayer} objects that have been both initialized using only a username. Comparison between fully and partly initialized objects is impossible.
+    public boolean absoluteEquals(RobloxPlayer other) {
+        if (other == null) return false;
+
+        if (!((other.flags & 0b00000010) == 0b00000010 && (flags & 0b00000010) == 0b00000010)) {
+            Main.logger.warning(this.username + " or " + other.username + " has been initialized properly. Unable to compare them using username only logic!");
+            return false;
+        }
+
+        return other.username.hashCode() == username.hashCode();
+    }
+
     @Override
     public String toString() {
         return username + " (" + userId + ")";
     }
+
+    @Override
     public boolean equals(Object obj) {
-        return obj instanceof RobloxPlayer && ((RobloxPlayer) obj).userId == userId;
-    }
-    public int hashCode() {
-        return Long.hashCode(userId);
+        if (this == obj) return true;
+        if (!(obj instanceof RobloxPlayer)) return false;
+
+        RobloxPlayer other = (RobloxPlayer) obj;
+
+        boolean thisUsernameOnly = (flags & 0b00000010) != 0;
+        boolean otherUsernameOnly = (other.flags & 0b00000010) != 0;
+
+        if (thisUsernameOnly || otherUsernameOnly) {
+            if (thisUsernameOnly && otherUsernameOnly) {
+                Main.logger.warning(username + " and " + other.username +
+                        " are both username-only. Comparing by username.");
+            } else {
+                Main.logger.warning(username + " and " + other.username +
+                        " initialized differently. Comparing by username; may be inaccurate!");
+            }
+            return username.equals(other.username);
+        }
+
+        return userId == other.userId;
     }
 
-    /// Generates a new {@link RobloxPlayer} with the given username. Please note that such a player instance will not behave like a normal {@link RobloxPlayer} instance, as the id will be set to -1, a substitute for "unknown".
-    /// This method is the equivalent of {@code new RobloxPlayer(username, -1)}.
-    public static RobloxPlayer fromUsername(String username) {
-        return new RobloxPlayer(username, -1);
+    @Override
+    public int hashCode() {
+        // Follow equals logic: use username if username-only, else userId
+        if ((flags & 0b00000010) != 0) {
+            return username.hashCode();
+        } else {
+            return Long.hashCode(userId);
+        }
     }
 
     /// Compares two players based on their highest permission.
     public static boolean isHigherThan(RobloxPlayer p1, RobloxPlayer p2) {
         return p1.isHigherThan(p2);
+    }
+
+    /// Parses and constructs a new {@link RobloxPlayer} from a raw API Structure (username:id)
+    public static RobloxPlayer parse(String user) {
+        return new RobloxPlayer(user.substring(0, user.indexOf(':')), Long.parseLong(user.substring(user.indexOf(':') + 1)));
     }
 }

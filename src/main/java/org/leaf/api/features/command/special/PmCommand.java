@@ -1,5 +1,7 @@
-package org.leaf.api.features.command;
+package org.leaf.api.features.command.special;
 
+import org.leaf.api.features.command.Command;
+import org.leaf.api.features.command.CommandName;
 import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
@@ -18,7 +20,7 @@ public class PmCommand extends Command {
                      List<RobloxPlayer> targets,
                      String message) {
 
-        super(raw, "pm", sender, timestamp);
+        super(raw, "pm", CommandName.Pm, sender, timestamp);
         this.targets = targets;
         this.message = message;
     }
@@ -28,7 +30,7 @@ public class PmCommand extends Command {
                      RobloxPlayer sender,
                      Instant timestamp) {
 
-        super(raw, "pm", sender, timestamp);
+        super(raw, "pm", CommandName.Pm, sender, timestamp);
 
         raw = raw.substring(raw.indexOf(" ") + 1).strip();
         StringBuilder targetBuilder = new StringBuilder();
@@ -41,8 +43,8 @@ public class PmCommand extends Command {
             raw = raw.substring(1);
         }
 
-        //TODO: Replace this with a proper player getter from the Cache, which defaults to an unknown player if the command has been sent too long ago.
-        if (!targetBuilder.isEmpty()) targets = Stream.of(targetBuilder.toString().split(",")).map(s -> new RobloxPlayer(s, 0)).toList();
+        // TODO: Replace this with a proper player getter from the Cache, which defaults to an unknown player if the command has been sent too long ago.
+        if (!targetBuilder.isEmpty()) targets = Stream.of(targetBuilder.toString().split(",")).map(RobloxPlayer::new).toList();
 
         raw = raw.substring(1);
 

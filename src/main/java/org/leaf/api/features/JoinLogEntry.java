@@ -1,5 +1,6 @@
 package org.leaf.api.features;
 
+import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Duration;
@@ -15,17 +16,7 @@ public class JoinLogEntry {
         this.player = player;
     }
 
-    /// Create an instance of {@link JoinLogEntry}, with the join time set to the given Unix timestamp in seconds.
-    public JoinLogEntry(Long joinedAt, RobloxPlayer player) {
-        this.joinedAt = Instant.ofEpochSecond(joinedAt);
-        this.player = player;
-    }
-
-    /// Create an instance of {@link JoinLogEntry}. This automatically sets the join time at the current time.
-    public JoinLogEntry(RobloxPlayer player) {
-        this.joinedAt = Instant.now();
-        this.player = player;
-    }
+    public JoinLogEntry(JoinLogDTO dto)
 
     /// Get the {@link Instant} when the player joined your server.
     public Instant getJoinedAt() {

@@ -1,6 +1,7 @@
 package org.leaf.api.features;
 
 import org.leaf.api.http.dto.v1.JoinLogDTO;
+import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Duration;
@@ -11,12 +12,22 @@ public class JoinLogEntry {
     private final RobloxPlayer player;
 
     /// Create an instance of {@link JoinLogEntry}.
+    /// <b>This constructor is deprecated! Please consider using {@link JoinLogEntry} using {@link JoinLogDTO} or {@link NewApiDTO.v2JoinLogDTO} instead!</b>
+    @Deprecated
     public JoinLogEntry(Instant joinedAt, RobloxPlayer player) {
         this.joinedAt = joinedAt;
         this.player = player;
     }
 
-    public JoinLogEntry(JoinLogDTO dto)
+    public JoinLogEntry(JoinLogDTO dto) {
+        joinedAt = Instant.ofEpochSecond(dto.Timestamp());
+        player = RobloxPlayer.parse(dto.Player());
+    }
+
+    public JoinLogEntry(NewApiDTO.v2JoinLogDTO dto) {
+        joinedAt = Instant.ofEpochSecond(dto.Timestamp());
+        player = RobloxPlayer.parse(dto.Player());
+    }
 
     /// Get the {@link Instant} when the player joined your server.
     public Instant getJoinedAt() {

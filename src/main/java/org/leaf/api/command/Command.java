@@ -15,7 +15,7 @@ public abstract class Command {
     private final CommandName commandName;
 
     /// Generic constructor for an ERLC Command.
-    Command(String raw,
+    protected Command(String raw,
                       String name,
                       CommandName commandName,
                       RobloxPlayer sender,

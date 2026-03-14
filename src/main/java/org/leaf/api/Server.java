@@ -1,7 +1,7 @@
 package org.leaf.api;
 
-import org.leaf.api.features.JoinLogEntry;
-import org.leaf.api.features.command.Command;
+import org.leaf.api.internal.JoinLogEntry;
+import org.leaf.api.command.Command;
 
 import java.util.ArrayList;
 import java.util.List;

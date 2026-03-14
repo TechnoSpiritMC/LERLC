@@ -32,4 +32,14 @@ public enum Permission {
     public boolean isHigherThan(Permission other) {
         return ordinal() > other.ordinal();
     }
+
+    public static Permission fromString(String perm) {
+        return switch (perm) {
+            case "Normal" -> PLAYER;
+            case "Server Administrator" -> ADMINISTRATOR;
+            case "Server Owner" -> OWNER;
+            case "Server Moderator" -> MODERATOR;
+            default -> UNDEFINED;
+        };
+    }
 }

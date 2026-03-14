@@ -25,6 +25,14 @@ public class RobloxPlayer {
         this.flags = 0b00000010;
     }
 
+    /// Creates a new {@link RobloxPlayer} with the given id. They can be compared on the hashCode of their username.
+    public RobloxPlayer(long id) {
+        this.username = "Undefined";
+        this.userId = id;
+
+        this.flags = 0b00000010;
+    }
+
     /// Creates a new {@link RobloxPlayer} with the given username and id. They can be compared based on their user id.<br>
     /// @param flags Field used to explicitly provide details about the object. It can be used to tell if the object was
     /// initialized using only a player ID, or if the user has left the server. Flags are mostly used internally but can also
@@ -209,5 +217,10 @@ public class RobloxPlayer {
     /// Parses and constructs a new {@link RobloxPlayer} from a raw API Structure (username:id)
     public static RobloxPlayer parse(String user) {
         return new RobloxPlayer(user.substring(0, user.indexOf(':')), Long.parseLong(user.substring(user.indexOf(':') + 1)));
+    }
+
+    /// Parses and constructs a new {@link RobloxPlayer} from a raw API Structure (username:id) and permissions.
+    public static RobloxPlayer parse(String user, Permission permission) {
+        return new RobloxPlayer(user.substring(0, user.indexOf(':')), Long.parseLong(user.substring(user.indexOf(':') + 1)), permission);
     }
 }

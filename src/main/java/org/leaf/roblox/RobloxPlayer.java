@@ -85,6 +85,15 @@ public class RobloxPlayer {
         this.permission = permission;
     }
 
+    /// Clone an existing RobloxPlayer to protect it.
+    public RobloxPlayer(RobloxPlayer other) {
+        this.username = other.username;
+        this.userId = other.userId;
+        this.permission = other.permission;
+        this.flags = other.flags;
+        this.lastSeen = other.lastSeen;
+    }
+
     /// Returns the username of this player.
     public String getUsername() {
         return username;

@@ -1,9 +1,16 @@
 package org.leaf.api.internal;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.leaf.Main;
 import org.leaf.WrapperConfig;
+import org.leaf.api.http.dto.v1.PlayerDTO;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -13,6 +20,7 @@ public class Cache {
 
     private final Context ctx;
     private final WrapperConfig config;
+    private final PlayerProvider playerProvider = new PlayerProvider();
 
     private final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
 
@@ -71,7 +79,35 @@ public class Cache {
     }
 
     synchronized public void refreshPlayers() {
-        //TODO: Add API Calls here!
+        Request req;
+
+        try {
+            req = new Request(ctx, "/server/players", false, ConnectionMethod.GET);
+            req.send();
+
+            if (req.returnCode != 200) {
+                Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
+                return;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<PlayerDTO> players = new ArrayList<>();
+
+        try {
+            players = mapper.readValue(
+                    req.body,
+                    new TypeReference<List<PlayerDTO>>() {}
+            );
+        } catch (JsonProcessingException e) {
+            Main.logger.severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
+            return;
+        }
+
+        playerProvider.addAll(players);
     }
     synchronized public void refreshCommands() {
         //TODO: Add API Calls here!

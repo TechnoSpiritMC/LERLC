@@ -8,23 +8,23 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Stack;
 
 public class PlayerData {
-    private final List<PlayerDTO> players;
+    private final Set<PlayerDTO> players;
     private final Stack<JoinLogEntry> joinLogs = new Stack<>();
 
     private final WrapperConfig config;
-    private final PlayerProvider playerProvider;
+    private final PlayerProvider playerProvider = Cache.playerProvider;
 
     
-    public PlayerData(List<PlayerDTO> players, List<JoinLogEntry> joinLogs, WrapperConfig config, PlayerProvider playerProvider) {
+    public PlayerData(Set<PlayerDTO> players, List<JoinLogEntry> joinLogs, WrapperConfig config) {
         this.config = config;
 
         this.players = players;
         this.joinLogs.setSize(config.getMaxJoinLogsLength());
         this.joinLogs.addAll(joinLogs);
-        this.playerProvider = playerProvider;
 
     }
 
@@ -38,6 +38,15 @@ public class PlayerData {
         ps.removeIf(Objects::isNull);
 
         return List.copyOf(ps);
+    }
+
+
+    void addJoinLog(JoinLogEntry player) {
+        joinLogs.push(player);
+    }
+
+    void addPlayer(PlayerDTO player) {
+        players.add(player);
     }
 
     public List<JoinLogEntry> getJoinLogs() {

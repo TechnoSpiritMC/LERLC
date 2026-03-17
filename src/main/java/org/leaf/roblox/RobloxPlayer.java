@@ -3,6 +3,7 @@ package org.leaf.roblox;
 import org.leaf.Main;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class RobloxPlayer {
     private final String username;
@@ -70,6 +71,11 @@ public class RobloxPlayer {
     ///   <td style="border:1px solid gray;padding:4px;">{@code 00010000}</td>
     ///   <td style="border:1px solid gray;padding:4px;">User is banned.</td>
     /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 10000000}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">User is unknown. Placeholder to determine of a player was null when initialized.</td>
+    /// </tr>
     /// </table>
     ///
 
@@ -87,6 +93,15 @@ public class RobloxPlayer {
 
     /// Clone an existing RobloxPlayer to protect it.
     public RobloxPlayer(RobloxPlayer other) {
+
+        if (Objects.isNull(other)) {
+            this.username = "Undefined.";
+            this.userId = -1;
+            this.flags = 0b1000000;
+            this.lastSeen = Instant.EPOCH;
+            return;
+        }
+
         this.username = other.username;
         this.userId = other.userId;
         this.permission = other.permission;
@@ -151,7 +166,13 @@ public class RobloxPlayer {
     ///   <td style="border:1px solid gray;padding:4px;">{@code 00010000}</td>
     ///   <td style="border:1px solid gray;padding:4px;">User is banned.</td>
     /// </tr>
+    ///
+    /// <tr>
+    ///   <td style="border:1px solid gray;padding:4px;">{@code 10000000}</td>
+    ///   <td style="border:1px solid gray;padding:4px;">User is unknown. Placeholder to determine of a player was null when initialized.</td>
+    /// </tr>
     /// </table>
+    ///
     ///
     public byte getFlags() {
         return flags;

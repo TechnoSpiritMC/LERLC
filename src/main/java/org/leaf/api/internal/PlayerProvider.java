@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlayerProvider {
-    List<RobloxPlayer> players;
+    List<RobloxPlayer> players = new java.util.ArrayList<>();
 
     public PlayerProvider() {}
 
@@ -31,16 +31,16 @@ public class PlayerProvider {
     }
 
     RobloxPlayer _getPlayer(long userId) {
-        return new RobloxPlayer(Objects.requireNonNull(players.stream().filter(player -> player.getUserId() == userId).findFirst().orElse(null)));
+        return new RobloxPlayer(players.stream().filter(player -> player.getUserId() == userId).findFirst().orElse(null));
     }
     RobloxPlayer _getPlayer(String username) {
-        return new RobloxPlayer(Objects.requireNonNull(players.stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null)));
+        return new RobloxPlayer(players.stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null));
     }
     RobloxPlayer _getPlayer(RobloxPlayer player) {
-        return new RobloxPlayer(Objects.requireNonNull(players.stream().filter(p -> p.equals(player)).findFirst().orElse(null)));
+        return new RobloxPlayer(players.stream().filter(p -> p.equals(player)).findFirst().orElse(null));
     }
     RobloxPlayer _getPlayer(Player player) {
-        return new RobloxPlayer(Objects.requireNonNull(players.stream().filter(p -> p.equals(player.getPlayer())).findFirst().orElse(null)));
+        return new RobloxPlayer(players.stream().filter(p -> p.equals(player.getPlayer())).findFirst().orElse(null));
     }
     RobloxPlayer _getPlayer(PlayerDTO player) {
         return players.stream().filter(p -> Objects.equals(p, RobloxPlayer.parse(player.Player()))).findFirst().orElse(null);

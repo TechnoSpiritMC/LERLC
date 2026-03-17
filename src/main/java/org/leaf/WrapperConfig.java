@@ -17,12 +17,14 @@ public class WrapperConfig {
     }
 
     /// Sets the max join log entries cached.
-    public void setMaxJoinLogsLength(int length) {
+    public WrapperConfig setMaxJoinLogsLength(int length) {
         _maxJoinLogsLength = length;
+        return this;
     }
     /// Sets the max command log entries cached.
-    public void setMaxCommandLogsLength(int length) {
+    public WrapperConfig setMaxCommandLogsLength(int length) {
         _maxCommandLogsLength = length;
+        return this;
     }
 
     /// Gets the max join log entries cached.
@@ -39,8 +41,9 @@ public class WrapperConfig {
         return offlineThreshold;
     }
     /// Sets the current offline threshold. Players who left the game will still be remembered by the cache for this duration and forgotten unless they join back within this threshold.
-    public void setOfflineThreshold(Duration offlineThreshold) {
+    public WrapperConfig setOfflineThreshold(Duration offlineThreshold) {
         this._offlineThreshold = offlineThreshold;
+        return this;
     }
 
 

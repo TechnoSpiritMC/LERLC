@@ -27,10 +27,12 @@ public class Context {
             req.send();
 
         } catch (IOException e) {
+            e.printStackTrace();
             Main.logger.severe("Failed to connect to API. Is the API up?");
             return false;
 
         } catch (InvalidatedKeyException e) {
+            e.printStackTrace();
             Main.logger.severe("Invalidated server API Key! Are you sure this is the right API Key? The API might also be experiencing some issues at this moment.");
             return false;
         }

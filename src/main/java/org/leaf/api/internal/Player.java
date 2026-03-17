@@ -1,6 +1,7 @@
 package org.leaf.api.internal;
 
 import org.jetbrains.annotations.Nullable;
+import org.leaf.api.http.dto.v2.Loc;
 import org.leaf.api.http.dto.v2.Vec2d;
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
@@ -10,12 +11,12 @@ import org.leaf.roblox.RobloxPlayer;
 import java.time.Instant;
 
 public class Player {
-    private final RobloxPlayer player;
+    private RobloxPlayer player;
     private String callSign;
     private String team;
     Instant lastSeen;
     int wantedStars = 0;
-    Vec2d<Float> position = new Vec2d<>(0f, 0f);
+    Loc position;
 
     public Player(PlayerDTO dto) {
         this.player = RobloxPlayer.parse(dto.Player(), Permission.fromString(dto.Permission()));
@@ -28,12 +29,21 @@ public class Player {
         this.callSign = dto.Callsign();
         this.team= dto.Team();
         this.wantedStars = dto.WantedStars();
-        this.position = new Vec2d<>(dto.Location().LocationX(), dto.Location().LocationZ())
+        this.position = new Loc(
+                new Vec2d<>(
+                        dto.Location().LocationX(),
+                        dto.Location().LocationZ()
+                ),
+                dto.Location().PostalCode(),
+                dto.Location().StreetName(),
+                dto.Location().BuildingNumber()
+
+        );
     }
 
     /// Get the {@link RobloxPlayer} assiciated with this player.
     public RobloxPlayer getPlayer() {
-        return player;
+        return new RobloxPlayer(player);
     }
 
     /// Get the call sign of this player.
@@ -70,5 +80,21 @@ public class Player {
 
     void setTeam(String team) {
         this.team = team;
+    }
+
+    void setWantedStars(int wantedStars) {
+        this.wantedStars = wantedStars;
+    }
+
+    void setPosition(Loc position) {
+        this.position = position;
+    }
+
+    /// Refreshes the player. This shall be called whence this player instance has existed for a long time, or if you suspect data about them has changed.
+    public Player refresh() {
+        player = Cache.playerProvider._getPlayer(this.player);
+        this.lastSeen = player.getLastSeen();
+
+        return this;
     }
 }

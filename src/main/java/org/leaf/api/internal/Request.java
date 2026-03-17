@@ -30,6 +30,7 @@ public class Request {
     public Request(Context context, String endpoint, boolean v2, ConnectionMethod method) {
         this.url = (v2? v2_BASE_URL : v1_BASE_URL) + endpoint;
         this.context = context;
+        this.method = method;
     }
 
     public void send() throws IOException, InvalidatedKeyException {

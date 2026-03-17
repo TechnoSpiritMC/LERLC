@@ -1,4 +1,7 @@
 package org.leaf.api.http.dto.v2;
 
-public record Loc(Vec2d<Double> pos){
+public record Loc(Vec2d<Double> pos,
+                  String postalCode,
+                  String streetName,
+                  String houseNumber){
 }

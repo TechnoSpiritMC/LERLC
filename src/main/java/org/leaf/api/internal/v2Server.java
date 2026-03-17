@@ -33,10 +33,6 @@ public class v2Server {
         JoinKey = dto.JoinKey();
         AccVerifiedReq = dto.AccVerifiedReq();
         TeamBalance = dto.TeamBalance();
-
-        for (var player: dto.Players()) {
-
-        }
     }
 }
 

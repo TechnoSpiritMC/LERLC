@@ -56,7 +56,7 @@ public class Cache {
     private void initialize() {
         playerData = new CacheField<>(
                 new PlayerData(
-                        new ArrayList<>(), new ArrayList<>(), config
+                        new ArrayList<>(), new ArrayList<>(), config, playerProvider
                 ),
 
                 Duration.ofSeconds(5).minus(ctx.getAverageLatency())

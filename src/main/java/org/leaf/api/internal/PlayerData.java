@@ -49,7 +49,20 @@ public class PlayerData {
         players.add(player);
     }
 
+    JoinLogEntry getNewestJoinLog() {
+        return joinLogs.peek();
+    }
+
+    boolean joinLogsContainsPlayer(RobloxPlayer p) {
+        return joinLogs.stream().map(JoinLogEntry::getPlayer).anyMatch(p::equals);
+    }
+
     public List<JoinLogEntry> getJoinLogs() {
-        return joinLogs;
+        System.out.println(joinLogs);
+
+        List<JoinLogEntry> logs = new java.util.ArrayList<>(joinLogs.stream().toList());
+        logs.removeIf(Objects::isNull);
+
+        return List.copyOf(logs);
     }
 }

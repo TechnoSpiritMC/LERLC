@@ -26,8 +26,8 @@ public class JoinLogEntry {
     public JoinLogEntry(JoinLogDTO dto) {
         joinedAt = Instant.ofEpochSecond(dto.Timestamp());
         OnNull.onNullAsync(
-                () -> playerProvider._getPlayer(dto.Player()),
-                () -> playerProvider._getPlayer(dto.Player()),
+                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
+                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
                 Duration.ofSeconds(5),
                 RobloxPlayer.parse(dto.Player())
                 ).thenAccept(result -> this.player = result);
@@ -37,8 +37,8 @@ public class JoinLogEntry {
         joinedAt = Instant.ofEpochSecond(dto.Timestamp());
 
         OnNull.onNullAsync(
-                () -> playerProvider._getPlayer(dto.Player()),
-                () -> playerProvider._getPlayer(dto.Player()),
+                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
+                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
                 Duration.ofSeconds(5),
                 RobloxPlayer.parse(dto.Player())
         ).thenAccept(result -> this.player = result);

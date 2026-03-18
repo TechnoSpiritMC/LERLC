@@ -11,6 +11,7 @@ import org.leaf.roblox.RobloxPlayer;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -162,7 +163,10 @@ public class Cache {
             return;
         }
 
-        joins.forEach(dto -> playerData.getValue().getJoinLogs().add(new JoinLogEntry(dto)));
+//        joins.removeIf(dto -> Instant.ofEpochSecond(dto.Timestamp()).minus(Duration.ofSeconds(playerData.getValue().getNewestJoinLog().getJoinedAt().getEpochSecond())).toEpochMilli() > 20000 ||
+//                playerData.getValue().joinLogsContainsPlayer(RobloxPlayer.parse(dto.Player())));
+
+        joins.forEach(dto -> playerData.getValue().addJoinLog(new JoinLogEntry(dto)));
     }
 
 

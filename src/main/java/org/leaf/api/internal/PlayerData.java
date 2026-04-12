@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
+import org.leaf.utils.Stack;
 
 public class PlayerData {
     private final Set<PlayerDTO> players;
@@ -42,6 +42,7 @@ public class PlayerData {
 
 
     void addJoinLog(JoinLogEntry player) {
+        if (joinLogsContainsPlayer(Objects.requireNonNull(player.getPlayer()))) return;
         joinLogs.push(player);
     }
 
@@ -51,6 +52,11 @@ public class PlayerData {
 
     JoinLogEntry getNewestJoinLog() {
         return joinLogs.peek();
+    }
+
+    /// This removes a player from the join logs. This should be called only when the said player leaves.
+    void removeJoinLog(RobloxPlayer player) {
+        joinLogs.get().removeIf(p -> Objects.equals(p.getPlayer(), player));
     }
 
     boolean joinLogsContainsPlayer(RobloxPlayer p) {

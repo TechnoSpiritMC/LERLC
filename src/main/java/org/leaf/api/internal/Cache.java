@@ -175,7 +175,7 @@ public class Cache {
     public List<RobloxPlayer> getPlayers() {
         return List.copyOf(playerData.getValue().getPlayers());
     }
-    //TODO: Find out why this ain't working.
+
     public List<JoinLogEntry> getJoinLogs() {
         return List.copyOf(playerData.getValue().getJoinLogs());
     }

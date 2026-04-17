@@ -1,8 +1,7 @@
-package org.leaf.api.internal._new;
+package org.leaf.api.internal;
 
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
-import org.leaf.api.internal.Player;
 
 public class AbstractPlayer {
     public final String username;
@@ -28,13 +27,35 @@ public class AbstractPlayer {
 
     public static AbstractPlayer from(String formatted) {
         String[] split = formatted.split(":");
+
+        if (split.length == 1) {
+            boolean idOnly = false;
+            long id = 0;
+
+            try {
+                id = Long.parseLong(split[0]);
+                idOnly = true;
+            } catch (NumberFormatException _) {}
+
+            if (idOnly) {
+                return new AbstractPlayer("Unknown", id);
+            } else {
+                return new AbstractPlayer(split[0], 0);
+            }
+        }
+
         return new AbstractPlayer(split[0], Long.parseLong(split[1]));
     }
 
-    @Deprecated
-    public static AbstractPlayer from(Player oldPlayerFmt) {
-        return new AbstractPlayer(oldPlayerFmt.getPlayer().getUsername(), oldPlayerFmt.getPlayer().getUserId());
+    public static AbstractPlayer from(long id) {
+        return new AbstractPlayer("Unknown", id);
     }
+
+    /// Deprecated, left only as a reminder of the old player structure.
+//    @Deprecated
+//    public static AbstractPlayer from(Player oldPlayerFmt) {
+//        return new AbstractPlayer(oldPlayerFmt.getPlayer().getUsername(), oldPlayerFmt.getPlayer().getUserId());
+//    }
 
     public AbstractPlayer(String username, long id) {
         this.username = username;

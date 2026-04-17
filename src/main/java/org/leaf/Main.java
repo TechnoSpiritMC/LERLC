@@ -1,6 +1,7 @@
 package org.leaf;
 
 import org.leaf.api.internal.Cache;
+import org.leaf.api.internal.PlayerProvider;
 
 import java.time.Duration;
 import java.util.logging.Logger;
@@ -18,6 +19,10 @@ public class Main {
                 System.out.println(c.getPlayers());
                 System.out.println(c.getJoinLogs());
                 Thread.sleep(1000);
+
+                System.out.println("----------------------------------------");
+
+                System.out.println(PlayerProvider.getAllPlayers());
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -1,77 +1,87 @@
 package org.leaf.api.internal;
 
-import org.leaf.WrapperConfig;
-import org.leaf.api.http.dto.v1.PlayerDTO;
-import org.leaf.roblox.RobloxPlayer;
-
-import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class PlayerProvider {
-    List<RobloxPlayer> players = new java.util.ArrayList<>();
+    static Map<Long, FullPlayer> playerMap = new HashMap<>();
 
-    public PlayerProvider() {}
+    static void addPlayer(FullPlayer player) {
+        if (playerMap.containsKey(player.getId())) {
+            updatePlayer(player);
+            return;
+        };
 
-    public RobloxPlayer getPlayer(long userId) {
-        return new RobloxPlayer(Objects.requireNonNull(players.stream().filter(player -> player.getUserId() == userId).findFirst().orElse(null)));
-    }
-    public RobloxPlayer getPlayer(String username) {
-        return players.stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null);
-    }
-    public RobloxPlayer getPlayer(RobloxPlayer player) {
-        return players.stream().filter(p -> p.equals(player)).findFirst().orElse(null);
-    }
-    public RobloxPlayer getPlayer(Player player) {
-        return players.stream().filter(p -> p.equals(player.getPlayer())).findFirst().orElse(null);
-    }
-    public RobloxPlayer getPlayer(PlayerDTO player) {
-        return players.stream().filter(p -> Objects.equals(p, RobloxPlayer.parse(player.Player()))).findFirst().orElse(null);
+        playerMap.put(player.getId(), player);
     }
 
-    RobloxPlayer _getPlayer(long userId) {
-        return new RobloxPlayer(players.stream().filter(player -> player.getUserId() == userId).findFirst().orElse(null));
-    }
-    RobloxPlayer _getPlayer(String username) {
-        return new RobloxPlayer(players.stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null));
-    }
-    RobloxPlayer _getPlayer(RobloxPlayer player) {
-        return new RobloxPlayer(players.stream().filter(p -> p.equals(player)).findFirst().orElse(null));
-    }
-    RobloxPlayer _getPlayer(Player player) {
-        return new RobloxPlayer(players.stream().filter(p -> p.equals(player.getPlayer())).findFirst().orElse(null));
-    }
-    RobloxPlayer _getPlayer(PlayerDTO player) {
-        return players.stream().filter(p -> Objects.equals(p, RobloxPlayer.parse(player.Player()))).findFirst().orElse(null);
+    public static void addAll(List<FullPlayer> players) {
+        players.forEach(PlayerProvider::addPlayer);
     }
 
-    public List<RobloxPlayer> getPlayers() {
-        return players;
+    static void updatePlayer(FullPlayer player) {
+        long id = player.getId();
+        FullPlayer old = playerMap.get(id);
+
+        if (old == null) throw new IllegalStateException("Player not found, cannot update it.");
+
+        updateIfChanged(old, player, FullPlayer::getLastSeen, FullPlayer::setLastSeen);
+        updateIfChanged(old, player, FullPlayer::getPermission, FullPlayer::setPermission);
+        updateIfChanged(old, player, FullPlayer::isOnline, FullPlayer::setOnline);
+        updateIfChanged(old, player, FullPlayer::isBanned, FullPlayer::setBanned);
+        updateIfChanged(old, player, FullPlayer::getCallSign, FullPlayer::setCallSign);
+        updateIfChanged(old, player, FullPlayer::getLocation, FullPlayer::setLocation);
+        updateIfChanged(old, player, FullPlayer::getWantedStars, FullPlayer::setWantedStars);
     }
 
-    public void addPlayer(RobloxPlayer player) {
-        if (players.contains(player)) return;
-        players.add(player);
+    static void updatePlayers() {
+        Instant now = Instant.now();
+
+        for (FullPlayer player : playerMap.values()) {
+            if (now.minus(10, java.time.temporal.ChronoUnit.MINUTES).isAfter(player.getLastSeen())) {
+                playerMap.remove(player.getId());
+            }
+        }
     }
 
-    public void removePlayer(RobloxPlayer player) {
-        players.remove(player);
-    }
-    public void clearPlayers() {
-        players.clear();
-    }
-    public int getPlayerCount() {
-        return players.size();
+    static void removePlayer(long id) {
+        playerMap.remove(id);
     }
 
-    public void updatePlayers(WrapperConfig config, List<RobloxPlayer> players) {
-        players.removeIf(player -> Duration.between(player.getLastSeen(), Instant.now()).toSeconds() > config.getOfflineThreshold().toSeconds());
-        players.stream().filter(p -> this.players.stream().noneMatch(p2 -> p2.equals(p))).forEach(this::addPlayer);
+    static FullPlayer __get(long id) {
+        return playerMap.get(id);
+    }
+    static FullPlayer __get(AbstractPlayer player) {
+        return __get(player.id);
     }
 
-    public void addAll(List<PlayerDTO> _players) {
-        List<RobloxPlayer> players = _players.stream().map(p -> RobloxPlayer.parse(p.Player())).toList();
-        players.stream().filter(p -> this.players.stream().noneMatch(p2 -> p2.equals(p))).forEach(this::addPlayer);
+
+    static public FullPlayer get(long id) {
+        return new FullPlayer(playerMap.get(id));
+    }
+
+    static public FullPlayer get(AbstractPlayer player) {
+        return get(player.id);
+    }
+
+    static public List<FullPlayer> getAllPlayers() {
+        return playerMap.values().stream().map(FullPlayer::new).toList();
+    }
+
+
+    private static <T, V> void updateIfChanged (
+            T oldObj,
+            T newObj,
+            Function<T, V> getter,
+            BiConsumer<T, V> setter
+    ) {
+        V oldVal = getter.apply(oldObj);
+        V newVal = getter.apply(newObj);
+
+        if (!Objects.equals(oldVal, newVal)) {
+            setter.accept(oldObj, newVal);
+        }
     }
 }

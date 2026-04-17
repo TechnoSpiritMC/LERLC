@@ -1,4 +1,4 @@
-package org.leaf.api.internal._new;
+package org.leaf.api.internal;
 
 import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.http.dto.v2.Vec2d;

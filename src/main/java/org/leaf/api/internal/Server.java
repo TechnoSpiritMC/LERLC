@@ -1,8 +1,6 @@
-package org.leaf.api.internal._new;
+package org.leaf.api.internal;
 
-import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
-import org.leaf.api.internal.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +26,9 @@ public class Server {
     private volatile List<ModCall>         modCalls    = new ArrayList<>();
     private volatile List<Vehicle>         vehicles    = new ArrayList<>();
 
+    public Server() {
+        this.ownerId = -1;
+    }
 
     public Server(NewApiDTO dto) {
         serverName = dto.Name();
@@ -52,7 +53,24 @@ public class Server {
         for (var entry : dto.Staff().Helpers().entrySet()) {
             helpers.add(AbstractPlayer.from(entry.getValue(), entry.getKey()));
         }
+        for (var entry: dto.JoinLogs()) {
+            joinLogs.add(new JoinLogEntry(entry));
+        }
 
+        queue.addAll(dto.Queue());
+
+        for (var entry: dto.KillLogs()) {
+            killLogs.add(new KillLogEntry(entry));
+        }
+        for (var entry: dto.CommandLogs()) {
+            commandLogs.add(new CommandLogEntry(entry));
+        }
+        for (var entry: dto.ModCalls()) {
+            modCalls.add(new ModCall(entry));
+        }
+        for (var entry: dto.Vehicles()) {
+            vehicles.add(new Vehicle(entry));
+        }
 
     }
 
@@ -144,5 +162,33 @@ public class Server {
     }
     void setHelpers(List<AbstractPlayer> helpers) {
         this.helpers = helpers;
+    }
+
+    public List<JoinLogEntry> getJoinLogs() {
+        return joinLogs;
+    }
+    void setJoinLogs(List<JoinLogEntry> joinLogs) {
+        this.joinLogs = joinLogs;
+    }
+
+    public List<Long> getQueue() {
+        return queue;
+    }
+    void setQueue(List<Long> queue) {
+        this.queue = queue;
+    }
+
+    public List<KillLogEntry> getKillLogs() {
+        return killLogs;
+    }
+    void setKillLogs(List<KillLogEntry> killLogs) {
+        this.killLogs = killLogs;
+    }
+
+    public List<CommandLogEntry> getCommandLogs() {
+        return commandLogs;
+    }
+    void setCommandLogs(List<CommandLogEntry> commandLogs) {
+        this.commandLogs = commandLogs;
     }
 }

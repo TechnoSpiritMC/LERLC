@@ -1,5 +1,6 @@
-package org.leaf.api.internal._new;
+package org.leaf.api.internal;
 
+import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.roblox.Permission;
 
 import java.time.Instant;
@@ -44,6 +45,24 @@ public class FullPlayer {
         this.callSign = other.callSign;
         this.location = other.location;
         this.wantedStars = other.wantedStars;
+    }
+
+    public FullPlayer(NewApiDTO.v2PlayerDTO player) {
+        this.username = player.Player().split(":")[0];
+        this.id = Long.parseLong(player.Player().split(":")[1]);
+        this.permission = switch (player.Permission()) {
+            case "Normal" -> Permission.PLAYER;
+            case "Server Administrator" -> Permission.ADMINISTRATOR;
+            case "Server Owner" -> Permission.OWNER;
+            case "Server Moderator" -> Permission.MODERATOR;
+            default -> Permission.UNDEFINED;
+        };
+        this.lastSeen = Instant.now();
+        this.isOnline = true;
+        this.isBanned = false;
+        this.callSign = player.Callsign();
+        this.location = Location.from(player.Location());
+        this.wantedStars = player.WantedStars();
     }
 
     /// Returns the username of the player.
@@ -125,5 +144,8 @@ public class FullPlayer {
         this.wantedStars = wantedStars;
     }
 
-
+    @Override
+    public String toString() {
+        return "FullUser: (" + permission + "): " + username + " (" + id + ")";
+    }
 }

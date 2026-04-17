@@ -15,7 +15,7 @@ public class v2Server {
     String AccVerifiedReq;
     boolean TeamBalance;
 
-    List<Player> Players;
+    List<AbstractPlayer> Players;
     ServerStaff Staff;
     List<JoinLogEntry> JoinLogs;
     List<QueuePlayerDTO> Queue;

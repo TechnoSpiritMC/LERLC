@@ -33,6 +33,13 @@ public class Request {
         this.method = method;
     }
 
+    /// Constructor for API V2 Requests.
+    public Request(Context context, ConnectionMethod method) {
+        this.url = v2_BASE_URL;
+        this.context = context;
+        this.method = method;
+    }
+
     public void send() throws IOException, InvalidatedKeyException {
         Instant start = Instant.now();
 

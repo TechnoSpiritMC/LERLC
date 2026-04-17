@@ -18,6 +18,7 @@ public class Main {
                 System.out.println(c.getPlayers());
                 System.out.println(c.getJoinLogs());
                 Thread.sleep(1000);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

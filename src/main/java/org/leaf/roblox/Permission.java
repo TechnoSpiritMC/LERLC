@@ -1,5 +1,6 @@
 package org.leaf.roblox;
 
+/// Enum representing the permission of a player.
 public enum Permission {
     /// Represents an undefined Permission. A player has this permission if they weren't properly initialized, or if we encountered an API-level error.
     UNDEFINED,

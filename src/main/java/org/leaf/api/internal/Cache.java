@@ -7,6 +7,7 @@ import org.leaf.Main;
 import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v1.PlayerDTO;
+import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.roblox.RobloxPlayer;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class Cache {
     private volatile CacheField<PlayerData> playerData;
     private volatile CacheField<CommandData> commandData;
+    private volatile CacheField<NewApiDTO> serverStatus;
 
     private final Context ctx;
     private final WrapperConfig config;
@@ -100,6 +102,34 @@ public class Cache {
         //TODO: Add API Calls here!
     }
 
+    private void refreshV2() {
+        Request req;
+
+        try {
+            req = new Request(ctx, ConnectionMethod.GET);
+            req.send();
+
+            if (req.returnCode != 200) {
+                Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
+                return;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        NewApiDTO dto = null;
+
+        try {
+            dto = mapper.readValue(req.body, NewApiDTO.class);
+        } catch (JsonProcessingException e) {
+            Main.logger.severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
+            return;
+        }
+
+
+    }
 
     private void refreshPlayerList() {
         Request req;

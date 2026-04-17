@@ -2,6 +2,7 @@ package org.leaf.api.internal;
 
 import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.PlayerDTO;
+import org.leaf.api.internal._new.AbstractPlayer;
 import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Duration;
@@ -55,11 +56,11 @@ public class PlayerData {
     }
 
     /// This removes a player from the join logs. This should be called only when the said player leaves.
-    void removeJoinLog(RobloxPlayer player) {
+    void removeJoinLog(AbstractPlayer player) {
         joinLogs.get().removeIf(p -> Objects.equals(p.getPlayer(), player));
     }
 
-    boolean joinLogsContainsPlayer(RobloxPlayer p) {
+    boolean joinLogsContainsPlayer(AbstractPlayer p) {
         return joinLogs.stream().map(JoinLogEntry::getPlayer).anyMatch(p::equals);
     }
 

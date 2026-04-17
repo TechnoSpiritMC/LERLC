@@ -3,6 +3,7 @@ package org.leaf.api.internal;
 import org.jetbrains.annotations.Nullable;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal._new.AbstractPlayer;
 import org.leaf.roblox.RobloxPlayer;
 import org.leaf.utils.OnNull;
 
@@ -13,35 +14,24 @@ import static org.leaf.api.internal.Cache.playerProvider;
 
 public class JoinLogEntry {
     private final Instant joinedAt;
-    private RobloxPlayer player = null;
+    private AbstractPlayer player = null;
 
     /// Create an instance of {@link JoinLogEntry}.
     /// <b>This constructor is deprecated! Please consider using {@link JoinLogEntry} using {@link JoinLogDTO} or {@link NewApiDTO.v2JoinLogDTO} instead!</b>
     @Deprecated
-    public JoinLogEntry(Instant joinedAt, RobloxPlayer player) {
+    public JoinLogEntry(Instant joinedAt, AbstractPlayer player) {
         this.joinedAt = joinedAt;
         this.player = player;
     }
 
     public JoinLogEntry(JoinLogDTO dto) {
         joinedAt = Instant.ofEpochSecond(dto.Timestamp());
-        OnNull.onNullAsync(
-                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
-                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
-                Duration.ofSeconds(5),
-                RobloxPlayer.parse(dto.Player())
-                ).thenAccept(result -> this.player = result);
+        player = AbstractPlayer.from(dto.Player());
     }
 
     public JoinLogEntry(NewApiDTO.v2JoinLogDTO dto) {
         joinedAt = Instant.ofEpochSecond(dto.Timestamp());
-
-        OnNull.onNullAsync(
-                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
-                () -> playerProvider._getPlayer(RobloxPlayer.parse(dto.Player())),
-                Duration.ofSeconds(5),
-                RobloxPlayer.parse(dto.Player())
-        ).thenAccept(result -> this.player = result);
+        player = AbstractPlayer.from(dto.Player());
     }
 
     /// Get the {@link Instant} when the player joined your server.
@@ -52,8 +42,8 @@ public class JoinLogEntry {
     /// Get the {@link RobloxPlayer} who joined your server.
     /// May return null if the cache hasn't been properly initialized yet.
     @Nullable
-    public RobloxPlayer getPlayer() {
-        return new RobloxPlayer(player);
+    public AbstractPlayer getPlayer() {
+        return player;
     }
 
     /// Get the playtime of the player during their current session.

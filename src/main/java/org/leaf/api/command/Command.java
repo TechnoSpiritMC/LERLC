@@ -1,7 +1,7 @@
 package org.leaf.api.command;
 
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 
@@ -9,7 +9,7 @@ public abstract class Command {
 
     private final String raw;
     private final String name;
-    private final RobloxPlayer sender;
+    private final AbstractPlayer sender;
     private final Instant timestamp;
 
     private final CommandName commandName;
@@ -18,7 +18,7 @@ public abstract class Command {
     protected Command(String raw,
                       String name,
                       CommandName commandName,
-                      RobloxPlayer sender,
+                      AbstractPlayer sender,
                       Instant timestamp) {
 
         this.raw = raw;
@@ -38,9 +38,9 @@ public abstract class Command {
         return name;
     }
 
-    /// Returns an instance of {@link RobloxPlayer} representing the player who executed the command.
+    /// Returns an instance of {@link AbstractPlayer} representing the player who executed the command.
     /// Please note that their permission level will be deduced from the command they ran. (i.e., a ban command will make the sender appear as an {@link org.leaf.roblox.Permission#ADMINISTRATOR})
-    public RobloxPlayer getSender() {
+    public AbstractPlayer getSender() {
         return sender;
     }
 

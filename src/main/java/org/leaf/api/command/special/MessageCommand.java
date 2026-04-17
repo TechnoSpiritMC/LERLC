@@ -1,8 +1,8 @@
 package org.leaf.api.command.special;
 
 import org.leaf.api.command.Command;
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 
@@ -13,7 +13,7 @@ public class MessageCommand extends Command {
     private final String msg;
 
     public MessageCommand(String raw,
-                          RobloxPlayer sender,
+                          AbstractPlayer sender,
                           CommandName commandName,
                           String trueName,
                           Instant timestamp,

@@ -3,14 +3,9 @@ package org.leaf.api.internal;
 import org.jetbrains.annotations.Nullable;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
-import org.leaf.api.internal._new.AbstractPlayer;
-import org.leaf.roblox.RobloxPlayer;
-import org.leaf.utils.OnNull;
 
 import java.time.Duration;
 import java.time.Instant;
-
-import static org.leaf.api.internal.Cache.playerProvider;
 
 public class JoinLogEntry {
     private final Instant joinedAt;
@@ -39,7 +34,7 @@ public class JoinLogEntry {
         return joinedAt;
     }
 
-    /// Get the {@link RobloxPlayer} who joined your server.
+    /// Get the {@link AbstractPlayer} who joined your server.
     /// May return null if the cache hasn't been properly initialized yet.
     @Nullable
     public AbstractPlayer getPlayer() {

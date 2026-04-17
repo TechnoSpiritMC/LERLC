@@ -1,21 +1,21 @@
 package org.leaf.api.command;
 
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 
 public class SingleTargetWithMsgCmd extends Command {
 
-    private final RobloxPlayer target;
+    private final AbstractPlayer target;
     private final String message;
 
     public SingleTargetWithMsgCmd(String raw,
-                               RobloxPlayer sender,
+                                  AbstractPlayer sender,
                                CommandName commandName,
                                String trueName,
                                Instant timestamp,
-                               RobloxPlayer target,
+                                  AbstractPlayer target,
                                String message) {
 
         super(raw, trueName, commandName, sender, timestamp);
@@ -24,7 +24,7 @@ public class SingleTargetWithMsgCmd extends Command {
     }
 
     /// Get the target of the command.
-    public RobloxPlayer getTarget() {
+    public AbstractPlayer getTarget() {
         return target;
     }
 

@@ -1,7 +1,7 @@
 package org.leaf.api.command;
 
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 
@@ -10,7 +10,7 @@ public class GenericCommand extends Command {
 
     /// Create a new instance of {@link GenericCommand}.
     public GenericCommand(String raw,
-                          RobloxPlayer sender,
+                          AbstractPlayer sender,
                           CommandName commandName,
                           String trueName,
                           Instant timestamp) {

@@ -8,11 +8,9 @@ import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,11 +20,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class Cache {
     private volatile CacheField<PlayerData> playerData;
     private volatile CacheField<CommandData> commandData;
-    private volatile CacheField<NewApiDTO> serverStatus;
+    private volatile CacheField<Server> server;
 
     private final Context ctx;
     private final WrapperConfig config;
-    static final PlayerProvider playerProvider = new PlayerProvider();
 
     private final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
 
@@ -81,11 +78,18 @@ public class Cache {
                 Duration.ofSeconds(5).minus(ctx.getAverageLatency())
         );
         commandData.setHook(this::refreshCommands);
+
+        server = new CacheField<>(
+                new Server(),
+                Duration.ofSeconds(5).minus(ctx.getAverageLatency())
+        );
+        commandData.setHook(this::refreshV2);
     }
 
     private void refresh() {
         if (playerData.isExpired())  new Thread(() -> playerData.refresh()).start();
         if (commandData.isExpired()) new Thread(() -> commandData.refresh()).start();
+        if (server.isExpired()) new Thread(() -> server.refresh()).start();
     }
 
     synchronized public void refreshPlayers() {
@@ -108,6 +112,7 @@ public class Cache {
         try {
             req = new Request(ctx, ConnectionMethod.GET);
             req.send();
+            System.out.println(req.body);
 
             if (req.returnCode != 200) {
                 Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
@@ -128,7 +133,13 @@ public class Cache {
             return;
         }
 
+        System.out.println(dto);
 
+        for (var player: dto.Players()) {
+            PlayerProvider.addPlayer(new FullPlayer(player));
+        }
+
+        server.setValue(new Server(dto));
     }
 
     private void refreshPlayerList() {
@@ -160,7 +171,6 @@ public class Cache {
             return;
         }
 
-        playerProvider.addAll(players);
         players.forEach(pDTO -> playerData.getValue().addPlayer(pDTO));
     }
 
@@ -193,19 +203,15 @@ public class Cache {
             return;
         }
 
-//        joins.removeIf(dto -> Instant.ofEpochSecond(dto.Timestamp()).minus(Duration.ofSeconds(playerData.getValue().getNewestJoinLog().getJoinedAt().getEpochSecond())).toEpochMilli() > 20000 ||
-//                playerData.getValue().joinLogsContainsPlayer(RobloxPlayer.parse(dto.Player())));
-
         joins.forEach(dto -> playerData.getValue().addJoinLog(new JoinLogEntry(dto)));
     }
 
 
 
 
-    public List<RobloxPlayer> getPlayers() {
+    public List<AbstractPlayer> getPlayers() {
         return List.copyOf(playerData.getValue().getPlayers());
     }
-
     public List<JoinLogEntry> getJoinLogs() {
         return List.copyOf(playerData.getValue().getJoinLogs());
     }

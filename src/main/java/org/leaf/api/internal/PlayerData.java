@@ -2,14 +2,11 @@ package org.leaf.api.internal;
 
 import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.PlayerDTO;
-import org.leaf.api.internal._new.AbstractPlayer;
-import org.leaf.roblox.RobloxPlayer;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
 import org.leaf.utils.Stack;
 
 public class PlayerData {
@@ -17,7 +14,6 @@ public class PlayerData {
     private final Stack<JoinLogEntry> joinLogs = new Stack<>();
 
     private final WrapperConfig config;
-    private final PlayerProvider playerProvider = Cache.playerProvider;
 
     
     public PlayerData(Set<PlayerDTO> players, List<JoinLogEntry> joinLogs, WrapperConfig config) {
@@ -34,11 +30,8 @@ public class PlayerData {
     }
 
     /// Get your server's player list.
-    public List<RobloxPlayer> getPlayers() {
-        List<RobloxPlayer> ps = new java.util.ArrayList<>(players.stream().map(playerProvider::getPlayer).toList());
-        ps.removeIf(Objects::isNull);
-
-        return List.copyOf(ps);
+    public List<AbstractPlayer> getPlayers() {
+        return players.stream().map(AbstractPlayer::from).toList();
     }
 
 

@@ -1,8 +1,8 @@
 package org.leaf.api.command.special;
 
 import org.leaf.api.command.Command;
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class PmCommand extends Command {
-    private List<RobloxPlayer> targets = new ArrayList<>();
+    private List<AbstractPlayer> targets = new ArrayList<>();
     private final String message;
 
     /// Construct a new {@link PmCommand} instance providing explicitly all of its elements.
     public PmCommand(String raw,
-                     RobloxPlayer sender,
+                     AbstractPlayer sender,
                      Instant timestamp,
-                     List<RobloxPlayer> targets,
+                     List<AbstractPlayer> targets,
                      String message) {
 
         super(raw, "pm", CommandName.Pm, sender, timestamp);
@@ -27,7 +27,7 @@ public class PmCommand extends Command {
 
     /// Construct a new {@link PmCommand} instance implicitly providing the targets and the message. The targets and the message will be parsed from the raw command.
     public PmCommand(String raw,
-                     RobloxPlayer sender,
+                     AbstractPlayer sender,
                      Instant timestamp) {
 
         super(raw, "pm", CommandName.Pm, sender, timestamp);
@@ -44,7 +44,7 @@ public class PmCommand extends Command {
         }
 
         // TODO: Replace this with a proper player getter from the Cache, which defaults to an unknown player if the command has been sent too long ago.
-        if (!targetBuilder.isEmpty()) targets = Stream.of(targetBuilder.toString().split(",")).map(RobloxPlayer::new).toList();
+        if (!targetBuilder.isEmpty()) targets = Stream.of(targetBuilder.toString().split(",")).map(AbstractPlayer::from).toList();
 
         raw = raw.substring(1);
 
@@ -52,7 +52,7 @@ public class PmCommand extends Command {
     }
 
     /// Get the list of targets of this {@link PmCommand}.
-    public List<RobloxPlayer> getTargets() {
+    public List<AbstractPlayer> getTargets() {
         return targets;
     }
 

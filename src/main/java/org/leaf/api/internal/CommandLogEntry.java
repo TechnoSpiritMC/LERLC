@@ -4,9 +4,9 @@ import org.leaf.api.command.Command;
 import org.leaf.api.command.GenericCommand;
 import org.leaf.api.command.SingleTargetCommand;
 import org.leaf.api.command.SingleTargetWithMsgCmd;
+import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.internal.command.CommandFactory;
 import org.leaf.api.http.dto.v1.CommandLogDTO;
-import org.leaf.roblox.RobloxPlayer;
 
 import org.leaf.api.command.special.*;
 import org.leaf.api.internal.command.CommandName;
@@ -15,11 +15,18 @@ import java.time.Instant;
 
 public class CommandLogEntry {
     public Command command;
-    public RobloxPlayer sender;
+    public AbstractPlayer sender;
     public Instant timestamp;
 
     public CommandLogEntry(CommandLogDTO dto) {
-        this.sender = RobloxPlayer.parse(dto.Player());
+        this.sender = AbstractPlayer.from(dto.Player());
+        this.timestamp = Instant.ofEpochSecond(dto.Timestamp());
+
+        this.command = CommandFactory.parse(dto.Command(), sender, timestamp);
+    }
+
+    public CommandLogEntry(NewApiDTO.v2CommandLogDTO dto) {
+        this.sender = AbstractPlayer.from(dto.Player());
         this.timestamp = Instant.ofEpochSecond(dto.Timestamp());
 
         this.command = CommandFactory.parse(dto.Command(), sender, timestamp);
@@ -121,7 +128,7 @@ public class CommandLogEntry {
     }
 
     /// Get the player who executed the command.
-    public RobloxPlayer getSender() {
+    public AbstractPlayer getSender() {
         return sender;
     }
 

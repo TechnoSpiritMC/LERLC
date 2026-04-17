@@ -1,27 +1,33 @@
 package org.leaf.api.internal;
 
 import org.leaf.api.http.dto.v1.KillLogDTO;
-import org.leaf.roblox.RobloxPlayer;
+import org.leaf.api.http.dto.v2.NewApiDTO;
 
 import java.time.Instant;
 
 public class KillLogEntry {
-    private final RobloxPlayer killer, victim;
+    private final AbstractPlayer killer, victim;
     private final Instant timestamp;
 
     public KillLogEntry(KillLogDTO dto) {
-        killer = RobloxPlayer.parse(dto.Killer());
-        victim = RobloxPlayer.parse(dto.Killed());
+        killer = AbstractPlayer.from(dto.Killer());
+        victim = AbstractPlayer.from(dto.Killed());
+        timestamp = Instant.ofEpochSecond(dto.Timestamp());
+    }
+
+    public KillLogEntry(NewApiDTO.v2KillLogDTO dto) {
+        killer = AbstractPlayer.from(dto.Killer());
+        victim = AbstractPlayer.from(dto.Killed());
         timestamp = Instant.ofEpochSecond(dto.Timestamp());
     }
 
     /// Get the killer.
-    public RobloxPlayer getKiller() {
+    public AbstractPlayer getKiller() {
         return killer;
     }
 
     /// Get the victim.
-    public RobloxPlayer getVictim() {
+    public AbstractPlayer getVictim() {
         return victim;
     }
 

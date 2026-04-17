@@ -3,7 +3,7 @@ package org.leaf.api.internal.command;
 import org.leaf.Main;
 import org.leaf.api.command.*;
 import org.leaf.api.command.special.*;
-import org.leaf.roblox.RobloxPlayer;
+import org.leaf.api.internal.AbstractPlayer;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -14,7 +14,7 @@ import static org.leaf.api.internal.command.CommandName.resolveCommandName;
 public class CommandFactory {
 
     public static Command parse(String rawCommand,
-                                RobloxPlayer sender,
+                                AbstractPlayer sender,
                                 Instant timestamp) {
 
         String[] parts = rawCommand.split("\\s+");
@@ -103,14 +103,14 @@ public class CommandFactory {
     private static Command buildSingleTarget(String raw,
                                              String name,
                                              CommandName commandName,
-                                             RobloxPlayer sender,
+                                             AbstractPlayer sender,
                                              Instant timestamp,
                                              String[] parts) {
 
         if (parts.length < 2)
             throw new IllegalArgumentException("Missing target");
 
-        RobloxPlayer target = RobloxPlayer.parse(parts[1]);
+        AbstractPlayer target = AbstractPlayer.from(parts[1]);
 
         return new SingleTargetCommand(
                 raw,
@@ -125,7 +125,7 @@ public class CommandFactory {
     private static Command buildGenericCommand(String raw,
                                              String name,
                                              CommandName commandName,
-                                             RobloxPlayer sender,
+                                             AbstractPlayer sender,
                                              Instant timestamp) {
 
         return new GenericCommand(raw, sender, commandName, name, timestamp);
@@ -134,7 +134,7 @@ public class CommandFactory {
     private static Command buildOptionalDualTarget(String raw,
                                                    String name,
                                                    CommandName commandName,
-                                                   RobloxPlayer sender,
+                                                   AbstractPlayer sender,
                                                    Instant timestamp,
                                                    String[] parts) {
 
@@ -142,13 +142,13 @@ public class CommandFactory {
             return buildSingleTarget(raw, name, commandName, sender, timestamp, parts);
         }
 
-        return new DualTargetCommand(raw, sender, commandName, name, timestamp, new RobloxPlayer(parts[1]), new RobloxPlayer(parts[2]));
+        return new DualTargetCommand(raw, sender, commandName, name, timestamp, AbstractPlayer.from(parts[1]), AbstractPlayer.from(parts[2]));
     }
 
     private static Command buildSingleTargetWithOptionalReason(String raw,
                                                               String name,
                                                               CommandName commandName,
-                                                              RobloxPlayer sender,
+                                                               AbstractPlayer sender,
                                                               Instant timestamp,
                                                               String[] parts) {
 
@@ -156,13 +156,13 @@ public class CommandFactory {
             return buildSingleTarget(raw, name, commandName, sender, timestamp, parts);
         }
 
-        return new SingleTargetWithMsgCmd(raw, sender, commandName, name, timestamp, new RobloxPlayer(parts[1]), raw.substring(raw.indexOf(" ") + 1));
+        return new SingleTargetWithMsgCmd(raw, sender, commandName, name, timestamp, AbstractPlayer.from(parts[1]), raw.substring(raw.indexOf(" ") + 1));
     }
 
     private static Command buildPmCommand(String raw,
                                           String name,
                                           CommandName commandName,
-                                          RobloxPlayer sender,
+                                          AbstractPlayer sender,
                                           Instant timestamp,
                                           String[] parts) {
 

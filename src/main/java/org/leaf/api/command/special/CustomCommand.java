@@ -1,8 +1,8 @@
 package org.leaf.api.command.special;
 
 import org.leaf.api.command.Command;
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandName;
-import org.leaf.roblox.RobloxPlayer;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,7 +21,7 @@ public class CustomCommand extends Command {
     private List<String> args;
 
     public CustomCommand(String raw,
-                         RobloxPlayer sender,
+                         AbstractPlayer sender,
                          CommandName commandName,
                          String trueName,
                          List<String> args) {

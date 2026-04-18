@@ -1,5 +1,9 @@
 package org.leaf.api.http.dto.v2;
 
+import org.leaf.utils.OnNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,4 +80,25 @@ public record NewApiDTO(
             String ColorHex,
             String ColorName
     ) {}
+
+    public static NewApiDTO from(NewApiDTO maybeNull) {
+        return new NewApiDTO(
+                OnNull.ensureNotNull(maybeNull.Name, "Unknown"),
+                maybeNull.OwnerId,
+                OnNull.ensureNotNull(maybeNull.CoOwnerIds, new ArrayList<>()),
+                maybeNull.CurrentPlayers,
+                maybeNull.MaxPlayers,
+                OnNull.ensureNotNull(maybeNull.JoinKey, "Unknown"),
+                OnNull.ensureNotNull(maybeNull.AccVerifiedReq, "Unknown"),
+                maybeNull.TeamBalance,
+                OnNull.ensureNotNull(maybeNull.Players, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.Staff, new v2StaffDTO(new HashMap<>(), new HashMap<>(), new HashMap<>())),
+                OnNull.ensureNotNull(maybeNull.JoinLogs, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.Queue, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.KillLogs, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.CommandLogs, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.ModCalls, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.Vehicles, new ArrayList<>())
+        );
+    }
 }

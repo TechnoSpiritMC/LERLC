@@ -40,4 +40,8 @@ public class OnNull {
 
         return future;
     }
+
+    public static <T> T ensureNotNull(T maybeNull, T fallback) {
+        return maybeNull != null ? maybeNull : fallback;
+    }
 }

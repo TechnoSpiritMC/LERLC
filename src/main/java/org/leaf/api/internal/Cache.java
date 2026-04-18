@@ -133,6 +133,8 @@ public class Cache {
             return;
         }
 
+        dto = NewApiDTO.from(dto);
+
         System.out.println(dto);
 
         for (var player: dto.Players()) {

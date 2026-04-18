@@ -30,7 +30,10 @@ public class Server {
         this.ownerId = -1;
     }
 
-    public Server(NewApiDTO dto) {
+    public Server(NewApiDTO _dto) {
+
+        NewApiDTO dto = NewApiDTO.from(_dto);
+
         serverName = dto.Name();
         ownerId = dto.OwnerId();
         coOwnerIds = dto.CoOwnerIds();

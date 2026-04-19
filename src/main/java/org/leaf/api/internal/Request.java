@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -27,6 +28,8 @@ public class Request {
     public String url;
     public Duration latency;
 
+    public QueryType queryType = QueryType.All;
+
     public Request(Context context, String endpoint, boolean v2, ConnectionMethod method) {
         this.url = (v2? v2_BASE_URL : v1_BASE_URL) + endpoint;
         this.context = context;
@@ -34,10 +37,11 @@ public class Request {
     }
 
     /// Constructor for API V2 Requests.
-    public Request(Context context, ConnectionMethod method) {
+    public Request(Context context, ConnectionMethod method, QueryType queries) {
         this.url = v2_BASE_URL;
         this.context = context;
         this.method = method;
+        this.queryType = queries;
     }
 
     public void send() throws IOException, InvalidatedKeyException {
@@ -77,11 +81,15 @@ public class Request {
 
 
     private HttpURLConnection setupConnection(String method) throws IOException {
-        URL url = URI.create(this.url).toURL();
+        List<String> wanted = queryType.allWanted();
+        String queryString = wanted.isEmpty() ? "" :
+                "?" + wanted.stream().map(q -> q + "=true").collect(java.util.stream.Collectors.joining("&"));
+        URL url = URI.create(this.url + queryString).toURL();
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         conn.setRequestProperty("Server-Key", context.getKey());
+
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoInput(true);
 

@@ -110,7 +110,7 @@ public class Cache {
         Request req;
 
         try {
-            req = new Request(ctx, ConnectionMethod.GET);
+            req = new Request(ctx, ConnectionMethod.GET, QueryType.All);
             req.send();
             System.out.println(req.body);
 

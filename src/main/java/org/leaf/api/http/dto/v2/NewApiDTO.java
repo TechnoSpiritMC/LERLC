@@ -1,5 +1,6 @@
 package org.leaf.api.http.dto.v2;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.leaf.utils.OnNull;
 
 import java.util.ArrayList;
@@ -23,8 +24,20 @@ public record NewApiDTO(
         List<v2KillLogDTO> KillLogs,
         List<v2CommandLogDTO> CommandLogs,
         List<v2ModCallDTO> ModCalls,
+        List<EmergencyCallDTO> EmergencyCalls,
         List<v2VehicleDTO> Vehicles
 ) {
+
+    public record EmergencyCallDTO(
+            String Team,
+            long Caller,
+            List<String> Players,
+            List<Float> Position,
+            long StartedAt,
+            long CallNumber,
+            String Description,
+            String PositionDescriptor
+    ) {}
 
     public record v2PlayerDTO(
             String Team,
@@ -46,6 +59,7 @@ public record NewApiDTO(
     public record v2StaffDTO(
             Map<Long, String> Admins,
             Map<Long, String> Mods,
+            @JsonDeserialize(using = EmptyArrayAsMapDeserializer.class)
             Map<Long, String> Helpers
     ) {}
 
@@ -98,6 +112,7 @@ public record NewApiDTO(
                 OnNull.ensureNotNull(maybeNull.KillLogs, new ArrayList<>()),
                 OnNull.ensureNotNull(maybeNull.CommandLogs, new ArrayList<>()),
                 OnNull.ensureNotNull(maybeNull.ModCalls, new ArrayList<>()),
+                OnNull.ensureNotNull(maybeNull.EmergencyCalls, new ArrayList<>()),
                 OnNull.ensureNotNull(maybeNull.Vehicles, new ArrayList<>())
         );
     }

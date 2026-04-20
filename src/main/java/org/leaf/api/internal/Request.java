@@ -62,6 +62,7 @@ public class Request {
 
         if (responseCode >= 400) {
             Main.logger.severe("HTTP Error " + responseCode + ": " + response.toString());
+            FailedRequestStore.add(this);
 
             if (responseCode == 403) {
                 invalidatedAPIKey = true;

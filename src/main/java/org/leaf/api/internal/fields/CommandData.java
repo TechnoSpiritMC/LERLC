@@ -1,4 +1,4 @@
-package org.leaf.api.internal;
+package org.leaf.api.internal.fields;
 
 import org.leaf.WrapperConfig;
 import org.leaf.api.command.Command;
@@ -27,6 +27,6 @@ public class CommandData {
     }
 
     public List<Command> getCommands() {
-        return commands;
+        return List.copyOf(commands);
     }
 }

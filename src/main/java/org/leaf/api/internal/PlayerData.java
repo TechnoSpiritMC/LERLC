@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.leaf.api.internal.fields.JoinLogEntry;
 import org.leaf.utils.Stack;
 
 public class PlayerData {
@@ -58,7 +59,6 @@ public class PlayerData {
     }
 
     public List<JoinLogEntry> getJoinLogs() {
-        System.out.println(joinLogs);
 
         List<JoinLogEntry> logs = new java.util.ArrayList<>(joinLogs.stream().toList());
         logs.removeIf(Objects::isNull);

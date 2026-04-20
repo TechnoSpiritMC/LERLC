@@ -8,6 +8,8 @@ import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal.fields.CommandData;
+import org.leaf.api.internal.fields.JoinLogEntry;
 
 import java.io.IOException;
 import java.time.Duration;

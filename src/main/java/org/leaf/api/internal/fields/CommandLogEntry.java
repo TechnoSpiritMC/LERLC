@@ -1,10 +1,11 @@
-package org.leaf.api.internal;
+package org.leaf.api.internal.fields;
 
 import org.leaf.api.command.Command;
 import org.leaf.api.command.GenericCommand;
 import org.leaf.api.command.SingleTargetCommand;
 import org.leaf.api.command.SingleTargetWithMsgCmd;
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal.AbstractPlayer;
 import org.leaf.api.internal.command.CommandFactory;
 import org.leaf.api.http.dto.v1.CommandLogDTO;
 

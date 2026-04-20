@@ -1,6 +1,7 @@
 package org.leaf.api.internal;
 
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal.fields.Location;
 import org.leaf.roblox.Permission;
 
 import java.time.Instant;

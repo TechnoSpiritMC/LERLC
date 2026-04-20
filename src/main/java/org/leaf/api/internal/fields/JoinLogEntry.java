@@ -1,8 +1,9 @@
-package org.leaf.api.internal;
+package org.leaf.api.internal.fields;
 
 import org.jetbrains.annotations.Nullable;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal.AbstractPlayer;
 
 import java.time.Duration;
 import java.time.Instant;

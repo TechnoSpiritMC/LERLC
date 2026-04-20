@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class Stack <T> implements Iterable<T>{
@@ -63,13 +64,21 @@ public class Stack <T> implements Iterable<T>{
     public T peek(int index) {
         ensureInitialization();
 
-        return list.get(index);
+        try {
+            return list.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     public T peek() {
         ensureInitialization();
 
-        return list.getLast();
+        try {
+            return list.getLast();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     private void shiftAll() {
@@ -83,6 +92,11 @@ public class Stack <T> implements Iterable<T>{
     @Override
     public @NotNull Iterator<T> iterator() {
         return list.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return list.toString();
     }
 
     public Stream<T> stream() {

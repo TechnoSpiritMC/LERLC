@@ -1,6 +1,7 @@
 package org.leaf.api.internal;
 
 import org.leaf.api.http.dto.v2.NewApiDTO;
+import org.leaf.api.internal.fields.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,23 +9,24 @@ import java.util.List;
 public class Server {
     private volatile String serverName;
     private final long ownerId;
-    private volatile List<Long> coOwnerIds             = new ArrayList<>();
+    private volatile List<Long> coOwnerIds                = new ArrayList<>();
     private volatile int currentPlayers;
     private volatile int maxPlayers;
     private volatile String joinKey;
     private volatile String accVerifiedReq;
     private volatile boolean teamBalance;
 
-    private volatile List<AbstractPlayer>  players     = new ArrayList<>();
-    private volatile List<AbstractPlayer>  admins      = new ArrayList<>();
-    private volatile List<AbstractPlayer>  mods        = new ArrayList<>();
-    private volatile List<AbstractPlayer>  helpers     = new ArrayList<>();
-    private volatile List<JoinLogEntry>    joinLogs    = new ArrayList<>();
-    private volatile List<Long>            queue       = new ArrayList<>();
-    private volatile List<KillLogEntry>    killLogs    = new ArrayList<>();
-    private volatile List<CommandLogEntry> commandLogs = new ArrayList<>();
-    private volatile List<ModCall>         modCalls    = new ArrayList<>();
-    private volatile List<Vehicle>         vehicles    = new ArrayList<>();
+    private volatile List<AbstractPlayer>  players        = new ArrayList<>();
+    private volatile List<AbstractPlayer>  admins         = new ArrayList<>();
+    private volatile List<AbstractPlayer>  mods           = new ArrayList<>();
+    private volatile List<AbstractPlayer>  helpers        = new ArrayList<>();
+    private volatile List<JoinLogEntry>    joinLogs       = new ArrayList<>();
+    private volatile List<Long>            queue          = new ArrayList<>();
+    private volatile List<KillLogEntry>    killLogs       = new ArrayList<>();
+    private volatile List<CommandLogEntry> commandLogs    = new ArrayList<>();
+    private volatile List<ModCall>         modCalls       = new ArrayList<>();
+    private volatile List<EmergencyCall>   emergencyCalls = new ArrayList<>();
+    private volatile List<Vehicle>         vehicles       = new ArrayList<>();
 
     public Server() {
         this.ownerId = -1;
@@ -70,6 +72,9 @@ public class Server {
         }
         for (var entry: dto.ModCalls()) {
             modCalls.add(new ModCall(entry));
+        }
+        for (var entry: dto.EmergencyCalls()) {
+            emergencyCalls.add(new EmergencyCall(entry));
         }
         for (var entry: dto.Vehicles()) {
             vehicles.add(new Vehicle(entry));

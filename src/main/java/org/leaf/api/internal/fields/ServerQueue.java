@@ -1,6 +1,7 @@
-package org.leaf.api.internal;
+package org.leaf.api.internal.fields;
 
 import org.leaf.api.http.dto.v1.QueuePlayerDTO;
+import org.leaf.api.internal.AbstractPlayer;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ public class ServerQueue {
     }
 
     public List<AbstractPlayer> getPlayers() {
-        return players;
+        return List.copyOf(players);
     }
 }

@@ -2,6 +2,7 @@ package org.leaf.api.internal;
 
 import org.leaf.Main;
 import org.leaf.utils.DataCollector;
+import org.leaf.utils.LERLCLogger;
 import org.leaf.utils.Stack;
 
 import java.util.*;
@@ -35,7 +36,7 @@ public class FailedRequestStore {
                 try {
                     hook.collect(req);
                 } catch (Exception e) {
-                    Main.logger.severe("Failed to run user hook!");
+                    LERLCLogger.getLogger().severe("Failed to run user hook!");
                 }
             }
         }
@@ -46,7 +47,7 @@ public class FailedRequestStore {
                 try {
                     hook.collect(req);
                 } catch (Exception e) {
-                    Main.logger.severe("Failed to run internal hook!");
+                    LERLCLogger.getLogger().severe("Failed to run internal hook!");
                 }
             }
         }

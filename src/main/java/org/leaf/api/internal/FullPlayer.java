@@ -118,6 +118,14 @@ public class FullPlayer {
         return wantedStars;
     }
 
+    /// Requests a new copy of the curresponding player to the {@link PlayerProvider}.
+    /// Please note that calling this should be done preferably only if this instance
+    /// has been living for a long time. Calling this more than once every 5 seconds
+    /// will simply have no effect as the cache refreshes at that frequency.
+    public FullPlayer refreshCopy() {
+        return PlayerProvider.get(this.id);
+    }
+
 
     void setPermission(Permission permission) {
         this.permission = permission;

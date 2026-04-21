@@ -17,9 +17,16 @@ import java.util.concurrent.ConcurrentMap;
 
 public abstract class Listener implements EventListener {
 
+    /// Event triggering when a command is sent in-game.
     public void onCommand(CommandEvent event) {}
+
+    /// Event triggering when a player joins the server.
     public void onPlayerJoin(PlayerJoinEvent event) {}
+
+    /// Event triggering when a player leaves the server.
     public void onPlayerLeave(PlayerLeaveEvent event) {}
+
+    /// Event encapsulating any event. Please note that overwriting a specific event method is recommended over this.
     public void onGenericEvent(Event event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();

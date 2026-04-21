@@ -8,11 +8,13 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.leaf.api.internal.fields.JoinLogEntry;
+import org.leaf.api.internal.fields.LeaveLogEntry;
 import org.leaf.utils.Stack;
 
 public class PlayerData {
     private final Set<PlayerDTO> players;
-    private final Stack<JoinLogEntry> joinLogs = new Stack<>();
+    private final Stack<JoinLogEntry> joinLogs = new Stack<>(15);
+    private final Stack<LeaveLogEntry> leaveLogs = new Stack<>(15);
 
     private final WrapperConfig config;
 
@@ -23,6 +25,8 @@ public class PlayerData {
         this.players = players;
         this.joinLogs.setSize(config.getMaxJoinLogsLength());
         this.joinLogs.addAll(joinLogs);
+
+        this.joinLogs.setSize(config.getMaxJoinLogsLength());
 
     }
 
@@ -36,9 +40,15 @@ public class PlayerData {
     }
 
 
-    void addJoinLog(JoinLogEntry player) {
-        if (joinLogsContainsPlayer(Objects.requireNonNull(player.getPlayer()))) return;
-        joinLogs.push(player);
+    boolean addJoinLog(JoinLogEntry entry) {
+        if (joinLogsContainsEntry(entry)) return false;
+        joinLogs.push(entry);
+        return true;
+    }
+    boolean addLeaveLog(LeaveLogEntry entry) {
+        if (leaveLogsContainsEntry(entry)) return false;
+        leaveLogs.push(entry);
+        return true;
     }
 
     void addPlayer(PlayerDTO player) {
@@ -48,14 +58,22 @@ public class PlayerData {
     JoinLogEntry getNewestJoinLog() {
         return joinLogs.peek();
     }
+    LeaveLogEntry getNewestLeaveLog() {
+        return leaveLogs.peek();
+    }
 
     /// This removes a player from the join logs. This should be called only when the said player leaves.
     void removeJoinLog(AbstractPlayer player) {
         joinLogs.get().removeIf(p -> Objects.equals(p.getPlayer(), player));
     }
 
-    boolean joinLogsContainsPlayer(AbstractPlayer p) {
-        return joinLogs.stream().map(JoinLogEntry::getPlayer).anyMatch(p::equals);
+    boolean joinLogsContainsEntry(JoinLogEntry entry) {
+        return joinLogs.getAsList().stream()
+                .anyMatch(e -> e.getJoinedAt().equals(entry.getJoinedAt()));
+    }
+    boolean leaveLogsContainsEntry(LeaveLogEntry entry) {
+        return leaveLogs.getAsList().stream()
+                .anyMatch(e -> e.getLeftAt().equals(entry.getLeftAt()));
     }
 
     public List<JoinLogEntry> getJoinLogs() {
@@ -64,5 +82,8 @@ public class PlayerData {
         logs.removeIf(Objects::isNull);
 
         return List.copyOf(logs);
+    }
+    public List<LeaveLogEntry> getLeaveLogs() {
+        return List.copyOf(leaveLogs.stream().toList());
     }
 }

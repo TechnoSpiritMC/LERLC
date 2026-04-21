@@ -4,6 +4,7 @@ import org.leaf.Main;
 import org.leaf.api.command.*;
 import org.leaf.api.command.special.*;
 import org.leaf.api.internal.AbstractPlayer;
+import org.leaf.utils.LERLCLogger;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -57,7 +58,7 @@ public class CommandFactory {
                 try {
                     hours = Integer.parseInt(parts[1]);
                 } catch (NumberFormatException e) {
-                    Main.logger.warning("Invalid time of day specified for time command. Got: " + parts[1] + ". Defaulting to 0.");
+                    LERLCLogger.getLogger().warning("Invalid time of day specified for time command. Got: " + parts[1] + ". Defaulting to 0.");
                 }
 
                 return new TimeCommand(rawCommand, sender, name, commandName, timestamp, hours);
@@ -69,7 +70,7 @@ public class CommandFactory {
                 try {
                     seconds = Long.parseLong(parts[1]);
                 } catch (NumberFormatException e) {
-                    Main.logger.warning("Invalid number of seconds specified for timer command. Got: " + parts[1] + ". Defaulting to 0.");
+                    LERLCLogger.getLogger().warning("Invalid number of seconds specified for timer command. Got: " + parts[1] + ". Defaulting to 0.");
                 }
 
                 return new DurationCommand(rawCommand, sender, name, commandName, timestamp, Duration.ofSeconds(seconds));

@@ -1,6 +1,7 @@
 package org.leaf.api.internal;
 
 import org.leaf.Main;
+import org.leaf.utils.LERLCLogger;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,7 +18,7 @@ public class CacheField<T> {
     public CacheField(T value, Duration refreshInterval) {
         this.value = value;
         if (refreshInterval.isNegative() || refreshInterval.isZero()) {
-            Main.logger.warning("Refresh interval for " + this.getClass().getSimpleName() + " is invalid, defaulting to 1 second.");
+            LERLCLogger.getLogger().warning("Refresh interval for " + this.getClass().getSimpleName() + " is invalid, defaulting to 1 second.");
             refreshInterval = Duration.ofSeconds(1);
         }
         else {

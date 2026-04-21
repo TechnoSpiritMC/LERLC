@@ -10,9 +10,15 @@ import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.internal.fields.CommandData;
 import org.leaf.api.internal.fields.JoinLogEntry;
+import org.leaf.api.internal.fields.LeaveLogEntry;
+import org.leaf.api.internal.listener.events.Event;
+import org.leaf.api.internal.listener.events.PlayerJoinEvent;
+import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
+import org.leaf.utils.LERLCLogger;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,12 +49,12 @@ public class Cache {
         try {
             connected = ctx.testApiConnection();
         } catch (Exception e) {
-            Main.logger.severe("Failed to connect to the API. Is the API down?");
+            LERLCLogger.getLogger().severe("Failed to connect to the API. Is the API down?");
             e.printStackTrace();
         }
 
         if (!connected) {
-            Main.logger.severe("Failed to connect to the API. Is the API down?");
+            LERLCLogger.getLogger().severe("Failed to connect to the API. Is the API down?");
             throw new RuntimeException("Failed to connect to the API.");
         }
 
@@ -85,7 +91,7 @@ public class Cache {
                 new Server(),
                 Duration.ofSeconds(5).minus(ctx.getAverageLatency())
         );
-        commandData.setHook(this::refreshV2);
+        server.setHook(this::refreshV2);
     }
 
     private void refresh() {
@@ -96,12 +102,7 @@ public class Cache {
 
     synchronized public void refreshPlayers() {
         refreshPlayerList();
-        Main.logger.info("Waiting for player list to refresh to proceed further... Estimated time: " + ctx.getAverageLatency().toMillis() + "ms");
-        while (playerData.getValue().getPlayers().isEmpty()) {;}
-        Main.logger.info("Player list refreshed!");
-
         refreshJoinLogs();
-
     }
 
     synchronized public void refreshCommands() {
@@ -114,10 +115,10 @@ public class Cache {
         try {
             req = new Request(ctx, ConnectionMethod.GET, QueryType.All);
             req.send();
-            System.out.println(req.body);
+            // System.out.println(req.body);
 
             if (req.returnCode != 200) {
-                Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
+                LERLCLogger.getLogger().severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
                 return;
             }
         } catch (IOException e) {
@@ -131,13 +132,13 @@ public class Cache {
         try {
             dto = mapper.readValue(req.body, NewApiDTO.class);
         } catch (JsonProcessingException e) {
-            Main.logger.severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
+            LERLCLogger.getLogger().severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
             return;
         }
 
         dto = NewApiDTO.from(dto);
 
-        System.out.println(dto);
+        // System.out.println(dto);
 
         for (var player: dto.Players()) {
             PlayerProvider.addPlayer(new FullPlayer(player));
@@ -154,7 +155,7 @@ public class Cache {
             req.send();
 
             if (req.returnCode != 200) {
-                Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
+                LERLCLogger.getLogger().severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
                 return;
             }
         } catch (IOException e) {
@@ -171,7 +172,7 @@ public class Cache {
                     new TypeReference<List<PlayerDTO>>() {}
             );
         } catch (JsonProcessingException e) {
-            Main.logger.severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
+            LERLCLogger.getLogger().severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
             return;
         }
 
@@ -186,7 +187,7 @@ public class Cache {
             req.send();
 
             if (req.returnCode != 200) {
-                Main.logger.severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
+                LERLCLogger.getLogger().severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
                 return;
             }
         } catch (IOException e) {
@@ -203,14 +204,35 @@ public class Cache {
                     new TypeReference<List<JoinLogDTO>>() {}
             );
         } catch (JsonProcessingException e) {
-            Main.logger.severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
+            LERLCLogger.getLogger().severe("Failed to parse player data. Is the API down? Skipping... " + e.getMessage());
             return;
         }
 
-        joins.forEach(dto -> playerData.getValue().addJoinLog(new JoinLogEntry(dto)));
+        joins.forEach(dto -> {
+            if (Instant.now().minusSeconds(dto.Timestamp()).plus(Duration.ofMinutes(15)).isBefore(Instant.now())) {
+                // Outdated dto, skipped.
+                return;
+            }
+
+            if (dto.Join()) {
+                var entry = new JoinLogEntry(dto);
+
+                boolean added = playerData.getValue().addJoinLog(entry);
+
+                if (added) {
+                    ListenerStore.handle(new PlayerJoinEvent(entry));
+                }
+            } else {
+                var entry = new LeaveLogEntry(dto);
+
+                boolean added = playerData.getValue().addLeaveLog(entry);
+
+                if (added) {
+                    ListenerStore.handle(new PlayerLeaveEvent(entry));
+                }
+            }
+        });
     }
-
-
 
 
     public List<AbstractPlayer> getPlayers() {

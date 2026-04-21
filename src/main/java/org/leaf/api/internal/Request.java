@@ -2,6 +2,7 @@ package org.leaf.api.internal;
 
 import org.leaf.Main;
 import org.leaf.api.exceptions.InvalidatedKeyException;
+import org.leaf.utils.LERLCLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -61,12 +62,12 @@ public class Request {
         in.close();
 
         if (responseCode >= 400) {
-            Main.logger.severe("HTTP Error " + responseCode + ": " + response.toString());
+            LERLCLogger.getLogger().severe("HTTP Error " + responseCode + ": " + response.toString());
             FailedRequestStore.add(this);
 
             if (responseCode == 403) {
                 invalidatedAPIKey = true;
-                Main.logger.severe("Invalidated server API Key!");
+                LERLCLogger.getLogger().severe("Invalidated server API Key!");
                 throw new InvalidatedKeyException("This API key has been invalidated!");
             }
 

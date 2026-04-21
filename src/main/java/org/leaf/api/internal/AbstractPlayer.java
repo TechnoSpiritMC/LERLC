@@ -73,6 +73,10 @@ public class AbstractPlayer {
         return false;
     }
 
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
     /// Attempts to find the corresponding {@link FullPlayer} object. A fullPlayer encapsulates more data and is cached.
     public FullPlayer getPlayer() {
         return PlayerProvider.get(this);

@@ -11,20 +11,15 @@ import java.util.logging.Logger;
 
 public class Main extends Listener {
     public static void main(String[] args) {
+        // Todo: better initialization?
         Cache c = new Cache("OYWtpwxbpHYTjvvlfbnI-YjqqHSttLLyGgqYVYQOjnTyVxvmYOMSxledjhasb");
         c.getConfig().setOfflineThreshold(Duration.ofMinutes(10)).done();
 
         ListenerStore.register(new Main());
-
         FailedRequestStore.addHook(data -> System.out.println("Failed request: " + data));
 
         while (true) {
             try {
-//                System.out.println("Current players (Should be AbstractPlayers): " + c.getPlayers());
-//                System.out.println("Current join logs: " + c.getJoinLogs());
-//                System.out.println("All playerProvider players: " + PlayerProvider.getAllPlayers());
-//
-//                System.out.println("----------------------------------------");
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();

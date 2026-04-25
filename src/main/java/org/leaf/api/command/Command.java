@@ -39,7 +39,6 @@ public abstract class Command {
     }
 
     /// Returns an instance of {@link AbstractPlayer} representing the player who executed the command.
-    /// Please note that their permission level will be deduced from the command they ran. (i.e., a ban command will make the sender appear as an {@link org.leaf.roblox.Permission#ADMINISTRATOR})
     public AbstractPlayer getSender() {
         return sender;
     }

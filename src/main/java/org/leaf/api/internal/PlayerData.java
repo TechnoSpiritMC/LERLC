@@ -9,12 +9,12 @@ import java.util.Set;
 
 import org.leaf.api.internal.fields.JoinLogEntry;
 import org.leaf.api.internal.fields.LeaveLogEntry;
-import org.leaf.utils.Stack;
+import org.leaf.utils.collections.StaticStack;
 
 public class PlayerData {
     private final Set<PlayerDTO> players;
-    private final Stack<JoinLogEntry> joinLogs = new Stack<>(15);
-    private final Stack<LeaveLogEntry> leaveLogs = new Stack<>(15);
+    private final StaticStack<JoinLogEntry> joinLogs = new StaticStack<>(15);
+    private final StaticStack<LeaveLogEntry> leaveLogs = new StaticStack<>(15);
 
     private final WrapperConfig config;
 

@@ -1,4 +1,4 @@
-package org.leaf.utils;
+package org.leaf.utils.collections;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-public class Stack <T> implements Iterable<T>{
+public class StaticStack<T> implements Iterable<T>{
 
     List<T> list = new ArrayList<>();
     int capacity;
 
-    public Stack(int capacity) {
+    public StaticStack(int capacity) {
         this.capacity = capacity;
     }
 
-    public Stack() {
+    public StaticStack() {
         this(-1);
     }
 
@@ -114,4 +114,6 @@ public class Stack <T> implements Iterable<T>{
     public void clear() {
         list.clear();
     }
+
+
 }

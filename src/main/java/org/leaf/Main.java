@@ -2,6 +2,7 @@ package org.leaf;
 
 import org.leaf.api.internal.*;
 import org.leaf.api.internal.listener.Listener;
+import org.leaf.api.internal.listener.events.CommandEvent;
 import org.leaf.api.internal.listener.events.PlayerJoinEvent;
 import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
 import org.leaf.utils.DataCollector;
@@ -35,5 +36,11 @@ public class Main extends Listener {
     @Override
     public void onPlayerLeave(PlayerLeaveEvent event) {
         System.err.println("Oh look! A player left! " + event.getPlayer());
+    }
+
+    @Override
+    public void onCommand(CommandEvent event) {
+        System.err.println("Oh look! A command was sent! " + event.getCommand());
+        System.err.println("Is it a raid command? " + ((event.getCommand().command.getEvaluation() > 10)? "Oh hell yeah!": "nah."));
     }
 }

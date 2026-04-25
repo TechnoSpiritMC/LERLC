@@ -1,14 +1,13 @@
 package org.leaf.api.internal;
 
-import org.leaf.Main;
 import org.leaf.utils.DataCollector;
 import org.leaf.utils.LERLCLogger;
-import org.leaf.utils.Stack;
+import org.leaf.utils.collections.StaticStack;
 
 import java.util.*;
 
 public class FailedRequestStore {
-    private static final Stack<Request> failedRequests = new Stack<>(10);
+    private static final StaticStack<Request> failedRequests = new StaticStack<>(10);
     private static final Map<HookScope, List<DataCollector<FailedRequest>>> hooks = new EnumMap<>(HookScope.class);
 
     static {
@@ -17,7 +16,7 @@ public class FailedRequestStore {
     }
 
     /// <b>WARNING! This should NOT be used to add failed requests. Please use {@link FailedRequestStore#add(Request)} instead.</b>
-    static Stack<Request> getStack() {
+    static StaticStack<Request> getStack() {
         return failedRequests;
     }
 

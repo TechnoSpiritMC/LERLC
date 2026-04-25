@@ -3,17 +3,19 @@ package org.leaf.api.internal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.leaf.Main;
 import org.leaf.WrapperConfig;
 import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.internal.fields.CommandData;
+import org.leaf.api.internal.fields.CommandLogEntry;
 import org.leaf.api.internal.fields.JoinLogEntry;
 import org.leaf.api.internal.fields.LeaveLogEntry;
+import org.leaf.api.internal.listener.events.CommandEvent;
 import org.leaf.api.internal.listener.events.Event;
 import org.leaf.api.internal.listener.events.PlayerJoinEvent;
 import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
+import org.leaf.utils.collections.CachedStack;
 import org.leaf.utils.LERLCLogger;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ public class Cache {
     private volatile CacheField<PlayerData> playerData;
     private volatile CacheField<CommandData> commandData;
     private volatile CacheField<Server> server;
+
+    private final CachedStack<CommandLogEntry> commandStack = new CachedStack<>(100, Duration.ofMinutes(15).toMillis());
 
     private final Context ctx;
     private final WrapperConfig config;
@@ -95,27 +99,50 @@ public class Cache {
     }
 
     private void refresh() {
+        LERLCLogger.getLogger().info("Refreshing cache...");
         if (playerData.isExpired())  new Thread(() -> playerData.refresh()).start();
         if (commandData.isExpired()) new Thread(() -> commandData.refresh()).start();
         if (server.isExpired()) new Thread(() -> server.refresh()).start();
     }
 
-    synchronized public void refreshPlayers() {
+    synchronized void refreshPlayers() {
         refreshPlayerList();
         refreshJoinLogs();
     }
 
-    synchronized public void refreshCommands() {
-        //TODO: Add API Calls here!
+    synchronized void refreshCommands() {
+        LERLCLogger.getLogger().info("Refreshing command cache...");
+        if (server.getValue() == null) return;
+        if (server.getValue().getCommandLogs().isEmpty()) return;
+
+        LERLCLogger.getLogger().info("Command cache size: " + server.getValue().getCommandLogs().size());
+
+        List<CommandLogEntry> commands = server.getValue().getCommandLogs();
+
+        for (var command: commands) {
+            if (Instant.now().minusSeconds(command.timestamp.getEpochSecond()).getEpochSecond() >= 15) {
+                // Command was sent more than 15 seconds ago, most likely irrelevant.
+                continue;
+            }
+
+            if (!commandStack.contains(command)) {
+                commandStack.add(command);
+
+                // This means that the command is most likely new. If it isn't, well too bad, I guess...?
+
+                ListenerStore.handle(new CommandEvent(command));
+            }
+        }
     }
 
     private void refreshV2() {
+        LERLCLogger.getLogger().info("Refreshing cache (v2)...");
         Request req;
 
         try {
             req = new Request(ctx, ConnectionMethod.GET, QueryType.All);
             req.send();
-            // System.out.println(req.body);
+            System.out.println(req.body);
 
             if (req.returnCode != 200) {
                 LERLCLogger.getLogger().severe("Failed to refresh player data. Is the API down? Skipping... " + req.returnCode);
@@ -127,7 +154,7 @@ public class Cache {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        NewApiDTO dto = null;
+        NewApiDTO dto;
 
         try {
             dto = mapper.readValue(req.body, NewApiDTO.class);
@@ -209,12 +236,15 @@ public class Cache {
         }
 
         joins.forEach(dto -> {
+            LERLCLogger.getLogger().info("Received join log: " + dto.Player());
             if (Instant.now().minusSeconds(dto.Timestamp()).plus(Duration.ofMinutes(15)).isBefore(Instant.now())) {
                 // Outdated dto, skipped.
+                LERLCLogger.getLogger().info("Join log is outdated.");
                 return;
             }
 
             if (dto.Join()) {
+                LERLCLogger.getLogger().info("Join log is for a player that is already in the player list.");
                 var entry = new JoinLogEntry(dto);
 
                 boolean added = playerData.getValue().addJoinLog(entry);
@@ -223,6 +253,7 @@ public class Cache {
                     ListenerStore.handle(new PlayerJoinEvent(entry));
                 }
             } else {
+                LERLCLogger.getLogger().info("Join log is for a player that is not in the player list.");
                 var entry = new LeaveLogEntry(dto);
 
                 boolean added = playerData.getValue().addLeaveLog(entry);

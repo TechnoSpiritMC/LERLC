@@ -238,15 +238,12 @@ public class Cache {
         }
 
         joins.forEach(dto -> {
-            LERLCLogger.getLogger().info("Received join log: " + dto.Player() + " (" + dto.Timestamp() + ")" + (dto.Join() ? " joined" : " left") + " (at) " + Instant.ofEpochSecond(dto.Timestamp()).toString());
             if (Instant.now().minusSeconds(dto.Timestamp()).getEpochSecond() >= 60) {
                 // Outdated dto, skipped.
-                LERLCLogger.getLogger().info("Join log is outdated.");
                 return;
             }
 
             if (dto.Join()) {
-                LERLCLogger.getLogger().info("Join log is for a player that is already in the player list.");
                 var entry = new JoinLogEntry(dto);
 
                 boolean added = playerData.getValue().addJoinLog(entry);
@@ -255,7 +252,6 @@ public class Cache {
                     ListenerStore.handle(new PlayerJoinEvent(entry));
                 }
             } else {
-                LERLCLogger.getLogger().info("Join log is for a player that is not in the player list.");
                 var entry = new LeaveLogEntry(dto);
 
                 boolean added = playerData.getValue().addLeaveLog(entry);

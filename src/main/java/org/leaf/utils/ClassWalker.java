@@ -1,5 +1,9 @@
 package org.leaf.utils;
 
+// License & Attribution.
+// Please note that this piece of software was greatly inspired by the amazing work of
+// the Discord JDA Team for their ClassWalker class.
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

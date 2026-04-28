@@ -30,17 +30,17 @@ public class Main extends Listener {
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
-        System.err.println("Oh look! A player joined! " + event.getPlayer());
+        System.out.println("Oh look! A player joined! " + event.getPlayer());
     }
 
     @Override
     public void onPlayerLeave(PlayerLeaveEvent event) {
-        System.err.println("Oh look! A player left! " + event.getPlayer());
+        System.out.println("Oh look! A player left! " + event.getPlayer());
     }
 
     @Override
     public void onCommand(CommandEvent event) {
-        System.err.println("Oh look! A command was sent! " + event.getCommand());
-        System.err.println("Is it a raid command? " + ((event.getCommand().command.getEvaluation() > 10)? "Oh hell yeah!": "nah."));
+        System.out.println("Oh look! A command was sent! " + event.getCommand());
+        System.out.println("Is it a raid command? " + ((event.getCommand().command.getEvaluation() > 10)? "Oh hell yeah!": "nah."));
     }
 }

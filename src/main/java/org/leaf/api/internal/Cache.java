@@ -172,6 +172,8 @@ public class Cache {
         }
 
         server.setValue(new Server(dto));
+
+        refreshJoinLogs();
     }
 
     private void refreshPlayerList() {
@@ -236,8 +238,8 @@ public class Cache {
         }
 
         joins.forEach(dto -> {
-            LERLCLogger.getLogger().info("Received join log: " + dto.Player());
-            if (Instant.now().minusSeconds(dto.Timestamp()).plus(Duration.ofMinutes(15)).isBefore(Instant.now())) {
+            LERLCLogger.getLogger().info("Received join log: " + dto.Player() + " (" + dto.Timestamp() + ")" + (dto.Join() ? " joined" : " left") + " (at) " + Instant.ofEpochSecond(dto.Timestamp()).toString());
+            if (Instant.now().minusSeconds(dto.Timestamp()).getEpochSecond() >= 60) {
                 // Outdated dto, skipped.
                 LERLCLogger.getLogger().info("Join log is outdated.");
                 return;

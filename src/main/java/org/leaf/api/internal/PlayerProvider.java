@@ -5,6 +5,15 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+/// Class responsible for holding and caching {@link FullPlayer} instances for this server. The cache refreshes these every few seconds (More precisely on every API v2 Refresh)
+/// The user can request a {@link FullPlayer} instance by calling {@link PlayerProvider#get(long)} or {@link PlayerProvider#get(AbstractPlayer)}.
+///
+/// {@link FullPlayer} instances are immutable and are used when you need more information about a user than their username and user ID.
+///
+/// <b>Warning:</b><br>
+/// Returned FullPlayers are copies of original objects that are cached by {@link PlayerProvider}.
+/// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
+/// if an instance has been living for long enough for something to have happened to it.
 public class PlayerProvider {
     static Map<Long, FullPlayer> playerMap = new HashMap<>();
 
@@ -12,12 +21,13 @@ public class PlayerProvider {
         if (playerMap.containsKey(player.getId())) {
             updatePlayer(player);
             return;
-        };
+        }
+        ;
 
         playerMap.put(player.getId(), player);
     }
 
-    public static void addAll(List<FullPlayer> players) {
+    static void addAll(List<FullPlayer> players) {
         players.forEach(PlayerProvider::addPlayer);
     }
 
@@ -53,25 +63,50 @@ public class PlayerProvider {
     static FullPlayer __get(long id) {
         return playerMap.get(id);
     }
+
     static FullPlayer __get(AbstractPlayer player) {
         return __get(player.id);
     }
 
 
+    /// Attempts to find a {@link FullPlayer} instance associated with a certain {@link AbstractPlayer}'s ID. A {@link FullPlayer} instance
+    /// provides much more information about a player, but AbstractPlayers are passed around as they are more memory
+    /// efficient and should suffise for most tasks.
+    ///
+    /// <b>Warning:</b><br>
+    /// Returned FullPlayers are copies of original objects that are cached by {@link PlayerProvider}.
+    /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
+    /// if an instance has been living for long enough for something to have happened to it.
     static public FullPlayer get(long id) {
         return new FullPlayer(playerMap.get(id));
     }
 
+    /// Attempts to find a {@link FullPlayer} instance associated with a certain {@link AbstractPlayer}'s ID. A {@link FullPlayer} instance
+    /// provides much more information about a player, but AbstractPlayers are passed around as they are more memory
+    /// efficient and should suffise for most tasks.
+    ///
+    /// <i>Note: This method fallbacks to {@link PlayerProvider#get(long)} internally. Calling {@link PlayerProvider#get(long)} directly providing {@code player.id} is also possible and will lead to the same effect.</i>
+    ///
+    /// <b>Warning:</b><br>
+    /// Returned FullPlayers are copies of original objects which are cached by {@link PlayerProvider}.
+    /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
+    /// if an instance has been living for long enough for something to have happened to it.
     static public FullPlayer get(AbstractPlayer player) {
         return get(player.id);
     }
 
+    /// Returns a list of all {@link FullPlayer} instances currently cached.
+    ///
+    /// <b>Warning:</b><br>
+    /// Returned FullPlayers are copies of original objects that are cached by {@link PlayerProvider}.
+    /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
+    /// if an instance has been living for long enough for something to have happened to it.
     static public List<FullPlayer> getAllPlayers() {
         return playerMap.values().stream().map(FullPlayer::new).toList();
     }
 
 
-    private static <T, V> void updateIfChanged (
+    private static <T, V> void updateIfChanged(
             T oldObj,
             T newObj,
             Function<T, V> getter,

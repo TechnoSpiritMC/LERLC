@@ -3,6 +3,9 @@ package org.leaf.api.internal;
 import org.leaf.api.http.dto.v1.PlayerDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
 
+/// Encapsulates a simple and very bare-bones version of a player. These are fetched from the API and directly generated from raw API DTOs. These can be used to get basic data about the player like their username or id safely.
+/// However, if a more detailed instance of a player is required, you need to call the {@link PlayerProvider#get(AbstractPlayer)} method, that will attempt to find a {@link FullPlayer} object associated with a player with this AbstractPlayer's ID.
+/// If none are found, you need to have a function fallback logic using only Abstract players.
 public class AbstractPlayer {
     public final String username;
     public final long id;

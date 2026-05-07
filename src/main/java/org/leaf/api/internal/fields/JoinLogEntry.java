@@ -5,9 +5,15 @@ import org.leaf.api.http.dto.v1.JoinLogDTO;
 import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.internal.AbstractPlayer;
 
+import org.leaf.api.internal.listener.events.PlayerJoinEvent;
+
 import java.time.Duration;
 import java.time.Instant;
 
+/// Represents a player joining your server.
+/// This holds information about who joined and when they did.
+///
+/// {@link JoinLogEntry} is a cache field, and are provided automatically in a {@link PlayerJoinEvent}.
 public class JoinLogEntry {
     private final Instant joinedAt;
     private AbstractPlayer player = null;

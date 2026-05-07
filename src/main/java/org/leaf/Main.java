@@ -5,10 +5,8 @@ import org.leaf.api.internal.listener.Listener;
 import org.leaf.api.internal.listener.events.CommandEvent;
 import org.leaf.api.internal.listener.events.PlayerJoinEvent;
 import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
-import org.leaf.utils.DataCollector;
 
 import java.time.Duration;
-import java.util.logging.Logger;
 
 public class Main extends Listener {
     public static void main(String[] args) {
@@ -43,4 +41,4 @@ public class Main extends Listener {
         System.out.println("Oh look! A command was sent! " + event.getCommand());
         System.out.println("Is it a raid command? " + ((event.getCommand().command.getEvaluation() > 10)? "Oh hell yeah!": "nah."));
     }
-}
+} 

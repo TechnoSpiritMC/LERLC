@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -17,8 +18,8 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class Request {
-    private static final String v1_BASE_URL = "https://api.policeroleplay.community/v1";
-    private static final String v2_BASE_URL = "https://api.policeroleplay.community/v2/server";
+    private static final String v1_BASE_URL = "https://api.erlc.gg/v1";
+    private static final String v2_BASE_URL = "https://api.erlc.gg/v2/server";
 
     public Context context;
     public boolean invalidatedAPIKey = false;
@@ -30,6 +31,11 @@ public class Request {
     public Duration latency;
 
     public QueryType queryType = QueryType.All;
+    public String requestBody = null;
+
+    public String rateLimitBucket = null;
+    public int rateLimitRemaining = -1;
+    public Instant rateLimitReset = Instant.EPOCH;
 
     public Request(Context context, String endpoint, boolean v2, ConnectionMethod method) {
         this.url = (v2? v2_BASE_URL : v1_BASE_URL) + endpoint;
@@ -45,12 +51,52 @@ public class Request {
         this.queryType = queries;
     }
 
+    public void setCommandRequestBody(String rawCommand) {
+        this.requestBody = "{\"command\": \"" + rawCommand +"\"}";
+    }
+
     public void send() throws IOException, InvalidatedKeyException {
         Instant start = Instant.now();
 
         final HttpURLConnection conn = setupConnection(method.toString());
 
-        int responseCode = conn.getResponseCode();
+        if (method == ConnectionMethod.POST && requestBody != null) {
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        int responseCode;
+        try {
+            responseCode = conn.getResponseCode();
+        } catch (IOException e) {
+            LERLCLogger.error("Failed to establish connection with the API. Perhaps you are not connected with the internet, or has the URL changed..?");
+            throw new RuntimeException("Failed to establish connection with the API.", e);
+        }
+
+        String bucket = conn.getHeaderField("X-RateLimit-Bucket");
+        if (bucket != null) {
+            this.rateLimitBucket = bucket;
+        }
+
+        String remaining = conn.getHeaderField("X-RateLimit-Remaining");
+        if (remaining != null) {
+            try {
+                this.rateLimitRemaining = Integer.parseInt(remaining);
+            } catch (NumberFormatException e) {
+                LERLCLogger.getLogger().warning("Failed to parse X-RateLimit-Remaining: " + remaining);
+            }
+        }
+
+        String reset = conn.getHeaderField("X-RateLimit-Reset");
+        if (reset != null) {
+            try {
+                this.rateLimitReset = Instant.ofEpochSecond(Long.parseLong(reset));
+            } catch (NumberFormatException e) {
+                LERLCLogger.getLogger().warning("Failed to parse X-RateLimit-Reset: " + reset);
+            }
+        }
+
         InputStream stream = (responseCode < 400) ? conn.getInputStream() : conn.getErrorStream();
         BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         StringBuilder response = new StringBuilder();
@@ -75,6 +121,8 @@ public class Request {
         }
 
         Duration latency = Duration.between(start, Instant.now());
+
+
 
         this.returnCode = responseCode;
         this.body = response.toString();

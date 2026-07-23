@@ -33,7 +33,6 @@ public class ListenerStore {
 
     static void handle(Event event) {
         for (Object listener: listeners) {
-//            System.out.println("Trying to run event " + event.getClass().getSimpleName() + " for registered handler: " + listener.getClass().getSimpleName() + "!");
             try {
                 ((Listener) listener).onEvent(event);
             } catch (Throwable t) {

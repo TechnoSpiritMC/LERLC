@@ -5,37 +5,47 @@ import org.leaf.api.http.dto.v2.NewApiDTO;
 import org.leaf.api.internal.command.CommandName;
 import org.leaf.api.internal.fields.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/// Class representing an ERLC Server. This holds most information about this server.
+///
+/// The server class exposes a lot of methods used to request information about the server:
+///
+/// <ul>
+/// <li> {@link Server#getServerName()} Returns the private server name as it is displayed in the private server list.</li>
+/// <li> {@link Server#getOwnerId()} Returns the owner ID. Please note that this is unique and constant per server, but multiple servers can be owned by the same user.</li>
+/// <li> {@link Server#getCoOwnerIds()} Returns a list containing the list of the private server's administrators mapped to their Roblox ID.</li>
+/// </ul>
 public class Server {
     private volatile String serverName;
     private final long ownerId;
-    private volatile List<Long> coOwnerIds                = new ArrayList<>();
+    private volatile List<Long> coOwnerIds                  = new ArrayList<>();
     private volatile int currentPlayers;
     private volatile int maxPlayers;
     private volatile String joinKey;
     private volatile String accVerifiedReq;
     private volatile boolean teamBalance;
 
-    private volatile List<AbstractPlayer>  players        = new ArrayList<>();
-    private volatile List<AbstractPlayer>  admins         = new ArrayList<>();
-    private volatile List<AbstractPlayer>  mods           = new ArrayList<>();
-    private volatile List<AbstractPlayer>  helpers        = new ArrayList<>();
-    private volatile List<JoinLogEntry>    joinLogs       = new ArrayList<>();
-    private volatile List<Long>            queue          = new ArrayList<>();
-    private volatile List<KillLogEntry>    killLogs       = new ArrayList<>();
-    private volatile List<CommandLogEntry> commandLogs    = new ArrayList<>();
-    private volatile List<ModCall>         modCalls       = new ArrayList<>();
-    private volatile List<EmergencyCall>   emergencyCalls = new ArrayList<>();
-    private volatile List<Vehicle>         vehicles       = new ArrayList<>();
+    private volatile List<AbstractPlayer>  players          = new ArrayList<>();
+    private volatile List<AbstractPlayer>  admins           = new ArrayList<>();
+    private volatile List<AbstractPlayer>  mods             = new ArrayList<>();
+    private volatile List<AbstractPlayer>  helpers          = new ArrayList<>();
+    private volatile List<JoinLogEntry>    joinLogs         = new ArrayList<>();
+    private volatile List<Long>            queue            = new ArrayList<>();
+    private volatile List<KillLogEntry>    killLogs         = new ArrayList<>();
+    private volatile List<CommandLogEntry> commandLogs      = new ArrayList<>();
+    private volatile List<ModCall>         modCalls         = new ArrayList<>();
+    private volatile List<EmergencyCall>   emergencyCalls   = new ArrayList<>();
+    private volatile List<Vehicle>         vehicles         = new ArrayList<>();
+
 
     public Server() {
         this.ownerId = -1;
     }
 
     public Server(NewApiDTO _dto) {
-
         NewApiDTO dto = NewApiDTO.from(_dto);
 
         serverName = dto.Name();
@@ -225,5 +235,71 @@ public class Server {
     }
     void setCommandLogs(List<CommandLogEntry> commandLogs) {
         this.commandLogs = commandLogs;
+    }
+
+
+    synchronized void updateFromDTO(NewApiDTO _dto) {
+        NewApiDTO dto = NewApiDTO.from(_dto);
+
+        serverName = dto.Name();
+        coOwnerIds = dto.CoOwnerIds();
+        currentPlayers = dto.CurrentPlayers();
+        maxPlayers = dto.MaxPlayers();
+        joinKey = dto.JoinKey();
+        accVerifiedReq = dto.AccVerifiedReq();
+        teamBalance = dto.TeamBalance();
+
+        players.clear();
+        for (var player: dto.Players()) {
+            players.add(AbstractPlayer.from(player));
+        }
+
+        admins.clear();
+        for (var entry : dto.Staff().Admins().entrySet()) {
+            admins.add(AbstractPlayer.from(entry.getValue(), entry.getKey()));
+        }
+
+        mods.clear();
+        for (var entry : dto.Staff().Mods().entrySet()) {
+            mods.add(AbstractPlayer.from(entry.getValue(), entry.getKey()));
+        }
+
+        helpers.clear();
+        for (var entry : dto.Staff().Helpers().entrySet()) {
+            helpers.add(AbstractPlayer.from(entry.getValue(), entry.getKey()));
+        }
+
+        joinLogs.clear();
+        for (var entry: dto.JoinLogs()) {
+            joinLogs.add(new JoinLogEntry(entry));
+        }
+
+        queue.clear();
+        queue.addAll(dto.Queue());
+
+        killLogs.clear();
+        for (var entry: dto.KillLogs()) {
+            killLogs.add(new KillLogEntry(entry));
+        }
+
+        commandLogs.clear();
+        for (var entry: dto.CommandLogs()) {
+            commandLogs.add(new CommandLogEntry(entry));
+        }
+
+        modCalls.clear();
+        for (var entry: dto.ModCalls()) {
+            modCalls.add(new ModCall(entry));
+        }
+
+        emergencyCalls.clear();
+        for (var entry: dto.EmergencyCalls()) {
+            emergencyCalls.add(new EmergencyCall(entry));
+        }
+
+        vehicles.clear();
+        for (var entry: dto.Vehicles()) {
+            vehicles.add(new Vehicle(entry));
+        }
     }
 }

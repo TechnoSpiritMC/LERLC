@@ -2,8 +2,11 @@ package org.leaf.api.command;
 
 import org.leaf.api.command.special.*;
 import org.leaf.api.internal.AbstractPlayer;
+import org.leaf.api.internal.Cache;
 import org.leaf.api.internal.command.CommandName;
 import org.leaf.api.internal.command.CommandUtils;
+import org.leaf.utils.DataCollector;
+import org.leaf.utils.Unimplemented;
 
 import java.time.Instant;
 
@@ -141,9 +144,28 @@ public abstract class Command {
         return timestamp;
     }
 
-
+    /// Get the command name as an Enum entry of the {@link CommandName} Enum class.
     public CommandName getCommandName() {
         return commandName;
+    }
+
+    /// Run this particular command. Please note that the command executed is the one returned by {@link Command#getRawCommand()}.
+    /// <br><br>
+    /// <b>Please note that this is only to be used to run a command that has already been executed in game when already
+    /// having its corresponding object. To run a custom command using this wrapper,
+    /// please use <i>{@link Cache#sendCommand(Command, DataCollector, boolean)} or {@link Cache#sendCommandBlocking(Command, DataCollector, boolean)} instead.
+    /// They provide more control about asynchronous execution, provide utility classes to monitor the execution process, and provide control about execution priority.
+    /// </i></b>
+    ///
+    /// <p>
+    ///     At a lower level, this class executed the provided command using {@link Cache#sendCommand(Command, DataCollector, boolean)}, with no dedicated {@link DataCollector}, and the priority flag being set to false.
+    ///     This means that the only information you get from running this method is whether the command was successfully queued with a boolean. Any other information cannot be retrieved.
+    ///     Additionally, the priority flag being set to false, a command cannot be executed using this method while a lockdown is active.
+    /// </p>
+    ///
+    /// @return {@code true} if an issue arose while running the command. {@code false} otherwise. An exception might also be thrown if an API or internal exception occurs.
+    public boolean run() {
+        return Cache.instance.sendCommand(this, null, false);
     }
 
     /// This method parses commands. Command parsing consists in evaluating the potential damage a command can do to determine if a command should be considered as a raid or no.
@@ -151,6 +173,7 @@ public abstract class Command {
     /// Evaluation in done by first attributing a number to every potentially harmful command. For example, a {@code :ban} command will be assigned a value of 8.
     /// <br>After that, the command gets parsed, and the number of targets is added to the evaluation.
     /// <br>Finally, if one of the targets is a mass selector (like {@code all}), the evaluation is increased by 5.
+    /// <br>Parsing is to be used for flagging raid commands. Users were intended to trigger a raid warning when a command is parsed at 10+, and alert about a potential raid starting from a score of 8.
     ///
     /// <ul>
     /// <li> {@code :ban}: {@code 8}</li>

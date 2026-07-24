@@ -64,7 +64,7 @@ public class CommandExecutionProcess {
     }
 
     private State state;
-    private final Command command;
+    private Command command;
     private final CompletableFuture<State> completionFuture = new CompletableFuture<>();
 
     private int queuePosition;
@@ -74,6 +74,11 @@ public class CommandExecutionProcess {
 
     CommandExecutionProcess(Command command) {
         this.command = command;
+        this.state = State.PENDING;
+    }
+
+    CommandExecutionProcess() {
+        this.command = null;
         this.state = State.PENDING;
     }
 
@@ -160,5 +165,8 @@ public class CommandExecutionProcess {
     }
     void setETA(Duration ETA) {
         this.ETA = ETA;
+    }
+    void setCommand(Command command) {
+        this.command = command;
     }
 }

@@ -35,7 +35,7 @@ public class RemoteCommandBuilder {
      * Builds the command using the provided raw command directly. A raw command is the command executed by a server staff member. For example, {@code :kick pikpikdu35 Kicked for 2 hours for RDM.}.
      * @param rawCommand The raw command to use.
      */
-    public RemoteCommandBuilder setRawCommand(String rawCommand) {
+    public RemoteCommandBuilder fromRawCommand(String rawCommand) {
         this.rawCommand = rawCommand;
         return this;
     }

@@ -11,6 +11,7 @@ import org.leaf.api.internal.fields.JoinLogEntry;
 import org.leaf.api.internal.fields.LeaveLogEntry;
 import org.leaf.utils.collections.StaticStack;
 
+@Deprecated
 public class PlayerData {
     private final Set<PlayerDTO> players;
     private final StaticStack<JoinLogEntry> joinLogs = new StaticStack<>(15);

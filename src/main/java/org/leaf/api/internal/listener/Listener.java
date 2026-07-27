@@ -1,10 +1,9 @@
 package org.leaf.api.internal.listener;
 
 import org.jetbrains.annotations.NotNull;
-import org.leaf.api.internal.listener.events.CommandEvent;
-import org.leaf.api.internal.listener.events.Event;
-import org.leaf.api.internal.listener.events.PlayerJoinEvent;
-import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
+import org.leaf.api.command.Command;
+import org.leaf.api.internal.Cache;
+import org.leaf.api.internal.listener.events.*;
 import org.leaf.utils.ClassWalker;
 
 import java.lang.invoke.MethodHandle;
@@ -25,6 +24,9 @@ public abstract class Listener implements EventListener {
 
     /// Event triggering when a player leaves the server.
     public void onPlayerLeave(PlayerLeaveEvent event) {}
+
+    /// Event triggering when a command with an evaluation of 10 or higher is sent (Or 8 or higher while in a lockdown). More about command raids and evaluation here: {@link Command#getEvaluation()}, and about lockdown here: {@link Cache#lockdown}
+    public void onRaid(RaidEvent event) {}
 
     /// Event encapsulating any event. Please note that overwriting a specific event method is recommended over this.
     public void onGenericEvent(Event event) {}

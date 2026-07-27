@@ -51,6 +51,7 @@ public class Cache {
 
     /// Flag representing the current state of the lockdown mode.
     final AtomicBoolean lockdown = new AtomicBoolean(false);
+    Instant inLockdownSince = Instant.ofEpochMilli(Long.MAX_VALUE);
     final CommandExecutor commandExecutor = new CommandExecutor();
 
     private void onConfigUpdate() {
@@ -140,8 +141,16 @@ public class Cache {
 
             if (!commandStack.contains(command)) {
                 commandStack.add(command);
-                if (command.command.getEvaluation() >= 10) {
-                    ListenerStore.handle(new RaidEvent(command));
+                if (command.command.getEvaluation() >= (lockdown.get() ? 8 : 10)) {
+
+                    ListenerStore.handle(new RaidEvent(command, (!lockdown.get()) && command.command.getEvaluation() >= 10));
+
+                    if ((!lockdown.get()) && command.command.getEvaluation() >= 10) {
+                        inLockdownSince = Instant.now();
+                        lockdown.set(true);
+                    }
+
+
                 }
 
                 // This means that the command is most likely new. If it isn't, well too bad, I guess...?
@@ -380,5 +389,30 @@ public class Cache {
     /// Fore information about the Server class here: {@link Server}.
     public Server getServer() {
         return server.getValue();
+    }
+
+    /**
+     * Returns the current state of the lockdown flag. More information about the lockdown mode in {@link WrapperConfig#setLockdownModeEnabled}.
+     * @return
+     */
+    public boolean isLockdownEnabled() {
+        return lockdown.get();
+    }
+
+    /**
+     * Returns the time at which the lockdown started.
+     * <br>Returns {@link Instant#ofEpochMilli(long)} with {@code long} being {@link Long#MAX_VALUE} if the lockdown has not started yet.
+     * @return Instant representing the time at which the lockdown started.
+     */
+    public Instant lockdownStartInstant() {
+        return inLockdownSince;
+    }
+
+    /**
+     * Exits the lockdown mode. This reverts normal operation for command scheduling, {@link RaidEvent} triggering (passing from a threshold of {@code 8} (during a lockdown) to {@code 10} (default) after a raid).
+     * Please make sure you only call this method after a raid is handled and done. Avoid exiting lockdown automatically and consider human verification instead.
+     */
+    public void exitLockdown() {
+        lockdown.set(false);
     }
 }

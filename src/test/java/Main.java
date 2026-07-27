@@ -1,10 +1,9 @@
-package org.leaf;
-
 import org.leaf.api.internal.*;
 import org.leaf.api.internal.listener.Listener;
 import org.leaf.api.internal.listener.events.CommandEvent;
 import org.leaf.api.internal.listener.events.PlayerJoinEvent;
 import org.leaf.api.internal.listener.events.PlayerLeaveEvent;
+import org.leaf.api.internal.listener.events.RaidEvent;
 
 import java.time.Duration;
 
@@ -40,5 +39,10 @@ public class Main extends Listener {
     public void onCommand(CommandEvent event) {
         System.out.println("Oh look! A command was sent! " + event.getCommand());
         System.out.println("Is it a raid command? " + ((event.getCommand().command.getEvaluation() > 10)? "Oh hell yeah!": "nah."));
+    }
+
+    @Override
+    public void onRaid(RaidEvent event) {
+        System.out.println("Oh look! A raid command was sent! " + event.getCommand());
     }
 } 

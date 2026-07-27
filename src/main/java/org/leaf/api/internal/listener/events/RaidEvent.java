@@ -16,15 +16,25 @@ import org.leaf.utils.Triplet;
 public class RaidEvent extends Event {
     public final CommandLogEntry command;
     private RaidActionStatus status;
+    private final boolean enteredLockdown;
 
-    public RaidEvent(CommandLogEntry command) {
+    public RaidEvent(CommandLogEntry command, boolean enteredLockdown) {
         this.command = command;
         this.status = RaidActionStatus.UNHANDLED;
+        this.enteredLockdown = enteredLockdown;
     }
 
     /// Get the problematic raid command.
     public CommandLogEntry getCommand() {
         return command;
+    }
+
+    /**
+     * Check if the server entered lockdown during the raid because of this command. The cache sets this flag when entering lockdown mode. {@link Cache#isLockdownEnabled()} returns {@code true} if this flag is toggled on in this RaidEvent.
+     * @return true if the server entered lockdown because of this command, false otherwise.
+     */
+    public boolean causedLockdown() {
+        return enteredLockdown;
     }
 
     /// Shortcut to get the command evaluation. More about command evaluation here: {@link Command#getEvaluation()}.

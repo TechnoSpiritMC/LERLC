@@ -415,4 +415,21 @@ public class Cache {
     public void exitLockdown() {
         lockdown.set(false);
     }
+
+    /**
+     * Terminates the internal components of the cache and releases resources.
+     * <ul>
+     * <li>Stops the scheduler service.
+     * <li>Shuts down the command executor service.
+     * <li>Sets the shared and private instance references to null.
+     * </ul>
+     * This method should be called when the cache is no longer needed to ensure
+     * proper cleanup of resources and to prevent potential memory leaks.
+     */
+    public void terminate() {
+        scheduler.shutdown();
+        commandExecutor.shutdown();
+        instance = null;
+        privateInstance = null;
+    }
 }

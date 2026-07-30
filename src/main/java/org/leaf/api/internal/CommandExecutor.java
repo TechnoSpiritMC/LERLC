@@ -95,8 +95,9 @@ public class CommandExecutor {
         }
 
         if (added) {
-            process.setNewState(CommandExecutionProcess.State.QUEUED);
             process.setQueuedAt(Instant.now());
+            process.setETA(Duration.between(previousExecution, nextRateLimitReset).multipliedBy(commandQueue.size()).plusSeconds(1));
+            process.setNewState(CommandExecutionProcess.State.QUEUED);
         } else {
             process.setNewState(CommandExecutionProcess.State.FAILED);
         }
@@ -108,8 +109,9 @@ public class CommandExecutor {
         boolean added = priorityQueue.offer(process);
 
         if (added) {
-            process.setNewState(CommandExecutionProcess.State.QUEUED);
             process.setQueuedAt(Instant.now());
+            process.setETA(Duration.between(previousExecution, nextRateLimitReset).multipliedBy(priorityQueue.size()).plusSeconds(1));
+            process.setNewState(CommandExecutionProcess.State.QUEUED);
         } else {
             process.setNewState(CommandExecutionProcess.State.FAILED);
         }

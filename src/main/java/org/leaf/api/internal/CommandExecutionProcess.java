@@ -147,7 +147,7 @@ public class CommandExecutionProcess {
      * @return the estimated execution time for this command.
      **/
     public Duration getETA() {
-        return ETA;
+        return ETA==null?Duration.ZERO:ETA;
     }
 
     public State awaitCompletion() throws InterruptedException, ExecutionException {

@@ -27,7 +27,7 @@ public class PlayerProvider {
     }
 
     void addAll(List<FullPlayer> players) {
-        players.forEach(Cache.instance.getPlayerProvider()::addPlayer);
+        players.forEach(this::addPlayer);
     }
 
     void updatePlayer(FullPlayer player) {

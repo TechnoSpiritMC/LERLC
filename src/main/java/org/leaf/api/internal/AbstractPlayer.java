@@ -81,6 +81,9 @@ public class AbstractPlayer {
     }
 
     /// Attempts to find the corresponding {@link FullPlayer} object. A fullPlayer encapsulates more data and is cached.
+    /// <h1>WARNING: DO NOT USE THIS METHOD IF YOUR BOT HAS MULTIPLE DIFFERENT INSTANCES OF THE CACHE CLASS</h1>
+    /// <b>Using this method if you have multiple Cache instances <u>WILL</u> cause issues and a shared PlayerProvider class by all your Cache instances. Use {@link PlayerProvider#get(AbstractPlayer)} instead</b>
+    @Deprecated(forRemoval = true)
     public FullPlayer getPlayer() {
         return Cache.instance.getPlayerProvider().get(this);
     }

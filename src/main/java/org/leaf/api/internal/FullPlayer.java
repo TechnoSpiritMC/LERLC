@@ -21,8 +21,8 @@ public class FullPlayer {
     public boolean isOnline = true;
     public boolean isBanned = false;
 
-    public FullPlayer fromAbstract(AbstractPlayer abstractPlayer) {
-        return Cache.instance.getPlayerProvider().get(abstractPlayer);
+    public FullPlayer fromAbstract(AbstractPlayer abstractPlayer, Cache cache) {
+        return cache.getPlayerProvider().get(abstractPlayer);
     }
 
     public FullPlayer(String username, long id, Permission permission, boolean isOnline, boolean isBanned, String callSign, Location location, int wantedStars) {
@@ -122,6 +122,9 @@ public class FullPlayer {
     /// Please note that calling this should be done preferably only if this instance
     /// has been living for a long time. Calling this more than once every 5 seconds
     /// will simply have no effect as the cache refreshes at that frequency.
+    ///
+    /// <h1>WARNING: DO NOT USE THIS METHOD IF YOUR BOT HAS MULTIPLE DIFFERENT INSTANCES OF THE CACHE CLASS</h1>
+    /// <b>Using this method if you have multiple Cache instances <u>WILL</u> cause issues and a shared PlayerProvider class by all your Cache instances. Use {@link PlayerProvider#get(AbstractPlayer)} instead</b>
     public FullPlayer refreshCopy() {
         return Cache.instance.getPlayerProvider().get(this.id);
     }

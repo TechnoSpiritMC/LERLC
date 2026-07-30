@@ -26,8 +26,11 @@ public class CommandExecutor {
     private Instant previousExecution = Instant.now();
     private Instant nextRateLimitReset = Instant.now();
 
-    public CommandExecutor() {
+    private final Cache cache;
+
+    public CommandExecutor(Cache cache) {
         scheduler.scheduleAtFixedRate(this::heartbeat, 0, 1, java.util.concurrent.TimeUnit.SECONDS);
+        this.cache = cache;
     }
 
     public void heartbeat() {
@@ -37,7 +40,7 @@ public class CommandExecutor {
         CommandExecutionProcess process;
         boolean wasPriority = true;
         do {
-            if (Cache.instance.lockdown.get() && priorityQueue.isEmpty()) return;
+            if (cache.lockdown.get() && priorityQueue.isEmpty()) return;
             process = priorityQueue.poll();
 
             if (process == null) {
@@ -64,7 +67,7 @@ public class CommandExecutor {
         Command command = process.getCommand();
         process.setNewState(CommandExecutionProcess.State.EXECUTING);
 
-        Request request = new Request(Cache.instance.ctx, "/command", true, ConnectionMethod.POST);
+        Request request = new Request(cache.ctx, "/command", true, ConnectionMethod.POST);
         request.setCommandRequestBody(command.getRawCommand());
 
         try {
@@ -87,7 +90,7 @@ public class CommandExecutor {
 
     public boolean submit(CommandExecutionProcess process) {
         boolean added = false;
-        if (!Cache.instance.lockdown.get()) {
+        if (!cache.lockdown.get()) {
              added = commandQueue.offer(process);
         }
 

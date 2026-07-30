@@ -54,7 +54,7 @@ public class Cache {
     /// Flag representing the current state of the lockdown mode.
     final AtomicBoolean lockdown = new AtomicBoolean(false);
     Instant inLockdownSince = Instant.ofEpochMilli(Long.MAX_VALUE);
-    final CommandExecutor commandExecutor = new CommandExecutor();
+    final CommandExecutor commandExecutor;
 
     private void onConfigUpdate() {
         playerData.getValue().configUpdateProvider();
@@ -84,6 +84,7 @@ public class Cache {
         scheduler.scheduleAtFixedRate(this::refresh, 0, 2, java.util.concurrent.TimeUnit.SECONDS);
 
         instance = this;
+        commandExecutor = new CommandExecutor(this);
     }
 
     public WrapperConfig getConfig() {

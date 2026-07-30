@@ -44,12 +44,12 @@ public class RaidEvent extends Event {
 
     /// Ban the author of the problematic command.
     /// @param collector The data collector used to process the command execution results.
-    public boolean banSender(DataCollector<CommandExecutionProcess> collector) {
+    public boolean banSender(DataCollector<CommandExecutionProcess> collector, Cache instance) {
         if (status == RaidActionStatus.BAN) return false;
-        var triplet = noPermissionCheck(collector);
+        var triplet = noPermissionCheck(collector, instance);
         if (triplet.first) throw new NoPermissionException("Cannot ban a player with no permission.", triplet.second, triplet.third);
 
-        boolean queued = Cache.instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":ban " + command.sender.id + " Banned by LERLC As a counter raid action.").build(), collector, true);
+        boolean queued = instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":ban " + command.sender.id + " Banned by LERLC As a counter raid action.").build(), collector, true);
         if (queued) status = RaidActionStatus.BAN;
 
         return queued;
@@ -57,12 +57,12 @@ public class RaidEvent extends Event {
 
     /// Kick the author of the problematic command.
     /// @param collector The data collector used to process the command execution results.
-    public boolean kickSender(DataCollector<CommandExecutionProcess> collector) {
+    public boolean kickSender(DataCollector<CommandExecutionProcess> collector, Cache instance) {
         if (status == RaidActionStatus.BAN) return false;
-        var triplet = noPermissionCheck(collector);
+        var triplet = noPermissionCheck(collector, instance);
         if (triplet.first) throw new NoPermissionException("Cannot ban a player with no permission.", triplet.second, triplet.third);
 
-        boolean queued = Cache.instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":kick " + command.sender.id + " Kicked by LERLC As a counter raid action.").build(), collector, true);
+        boolean queued = instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":kick " + command.sender.id + " Kicked by LERLC As a counter raid action.").build(), collector, true);
         if (queued) status = RaidActionStatus.BAN;
 
         return queued;
@@ -70,12 +70,12 @@ public class RaidEvent extends Event {
 
     /// Remove moderator permissions from the author of the problematic command.
     /// @param collector The data collector used to process the command execution results.
-    public boolean deModSender(DataCollector<CommandExecutionProcess> collector) {
+    public boolean deModSender(DataCollector<CommandExecutionProcess> collector, Cache instance) {
         if (status == RaidActionStatus.BAN) return false;
-        var triplet = noPermissionCheck(collector);
+        var triplet = noPermissionCheck(collector, instance);
         if (triplet.first) throw new NoPermissionException("Cannot ban a player with no permission.", triplet.second, triplet.third);
 
-        boolean queued = Cache.instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":unmod " + command.sender.id + " Demoted (removed mod perms) by LERLC As a counter raid action.").build(), collector, true);
+        boolean queued = instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":unmod " + command.sender.id + " Demoted (removed mod perms) by LERLC As a counter raid action.").build(), collector, true);
         if (queued) status = RaidActionStatus.BAN;
 
         return queued;
@@ -83,12 +83,12 @@ public class RaidEvent extends Event {
 
     /// Remove administrator permissions from the author of the problematic command.
     /// @param collector The data collector used to process the command execution results.
-    public boolean deAdminSender(DataCollector<CommandExecutionProcess> collector) {
+    public boolean deAdminSender(DataCollector<CommandExecutionProcess> collector, Cache instance) {
         if (status == RaidActionStatus.BAN) return false;
-        var triplet = noPermissionCheck(collector);
+        var triplet = noPermissionCheck(collector, instance);
         if (triplet.first) throw new NoPermissionException("Cannot ban a player with no permission.", triplet.second, triplet.third);
 
-        boolean queued = Cache.instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":unadmin " + command.sender.id + " Demoted (removed admin perms) by LERLC As a counter raid action.").build(), collector, true);
+        boolean queued = instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":unadmin " + command.sender.id + " Demoted (removed admin perms) by LERLC As a counter raid action.").build(), collector, true);
         if (queued) status = RaidActionStatus.BAN;
 
         return queued;
@@ -103,16 +103,16 @@ public class RaidEvent extends Event {
      * @param message The warning message to be sent to the sender.
      * @return true if the warning command was successfully sent, false otherwise.
      */
-    public boolean warnSender(DataCollector<CommandExecutionProcess> collector, String message) {
+    public boolean warnSender(DataCollector<CommandExecutionProcess> collector, String message, Cache instance) {
         if (status == RaidActionStatus.BAN) return false;
-        boolean queued = Cache.instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":pm " + command.sender.id + " " + message).build(), collector, true);
+        boolean queued = instance.sendCommand(new RemoteCommandBuilder().fromRawCommand(":pm " + command.sender.id + " " + message).build(), collector, true);
         if (queued) status = RaidActionStatus.BAN;
 
         return queued;
     }
 
-    private Triplet<Boolean, Permission, Permission> noPermissionCheck(DataCollector<CommandExecutionProcess> collector) {
-        FullPlayer fp = Cache.instance.getPlayerProvider().get(command.sender);
+    private Triplet<Boolean, Permission, Permission> noPermissionCheck(DataCollector<CommandExecutionProcess> collector, Cache instance) {
+        FullPlayer fp = instance.getPlayerProvider().get(command.sender);
         return new Triplet<>(fp.getPermission().equals(Permission.CO_OWNER) || fp.getPermission().equals(Permission.OWNER), Permission.CO_OWNER, fp.getPermission());
     }
 }

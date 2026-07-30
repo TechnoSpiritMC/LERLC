@@ -163,6 +163,10 @@ public abstract class Command {
     ///     Additionally, the priority flag being set to false, a command cannot be executed using this method while a lockdown is active.
     /// </p>
     ///
+    /// <h1>WARNING: DO NOT USE THIS METHOD IF YOUR BOT HAS MULTIPLE DIFFERENT INSTANCES OF THE CACHE CLASS</h1>
+    /// <b>Using this method can run the command on all your servers if you are using multiple Cache instances.
+    /// Please use {@link Cache#sendCommand(Command, DataCollector, boolean)} and/or {@link Cache#sendCommandBlocking(Command, DataCollector, boolean)} instead.</b>
+    ///
     /// @return {@code true} if an issue arose while running the command. {@code false} otherwise. An exception might also be thrown if an API or internal exception occurs.
     public boolean run() {
         return Cache.instance.sendCommand(this, null, false);

@@ -22,7 +22,7 @@ public class FullPlayer {
     public boolean isBanned = false;
 
     public FullPlayer fromAbstract(AbstractPlayer abstractPlayer) {
-        return PlayerProvider.get(abstractPlayer);
+        return Cache.instance.getPlayerProvider().get(abstractPlayer);
     }
 
     public FullPlayer(String username, long id, Permission permission, boolean isOnline, boolean isBanned, String callSign, Location location, int wantedStars) {
@@ -123,7 +123,7 @@ public class FullPlayer {
     /// has been living for a long time. Calling this more than once every 5 seconds
     /// will simply have no effect as the cache refreshes at that frequency.
     public FullPlayer refreshCopy() {
-        return PlayerProvider.get(this.id);
+        return Cache.instance.getPlayerProvider().get(this.id);
     }
 
 

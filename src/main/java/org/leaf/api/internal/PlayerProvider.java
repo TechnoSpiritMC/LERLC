@@ -15,23 +15,22 @@ import java.util.function.Function;
 /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
 /// if an instance has been living for long enough for something to have happened to it.
 public class PlayerProvider {
-    static Map<Long, FullPlayer> playerMap = new HashMap<>();
+    Map<Long, FullPlayer> playerMap = new HashMap<>();
 
-    static void addPlayer(FullPlayer player) {
+    void addPlayer(FullPlayer player) {
         if (playerMap.containsKey(player.getId())) {
             updatePlayer(player);
             return;
         }
-        ;
 
         playerMap.put(player.getId(), player);
     }
 
-    static void addAll(List<FullPlayer> players) {
-        players.forEach(PlayerProvider::addPlayer);
+    void addAll(List<FullPlayer> players) {
+        players.forEach(Cache.instance.getPlayerProvider()::addPlayer);
     }
 
-    static void updatePlayer(FullPlayer player) {
+    void updatePlayer(FullPlayer player) {
         long id = player.getId();
         FullPlayer old = playerMap.get(id);
 
@@ -46,7 +45,7 @@ public class PlayerProvider {
         updateIfChanged(old, player, FullPlayer::getWantedStars, FullPlayer::setWantedStars);
     }
 
-    static void updatePlayers() {
+    void updatePlayers() {
         Instant now = Instant.now();
 
         for (FullPlayer player : playerMap.values()) {
@@ -56,15 +55,15 @@ public class PlayerProvider {
         }
     }
 
-    static void removePlayer(long id) {
+    void removePlayer(long id) {
         playerMap.remove(id);
     }
 
-    static FullPlayer __get(long id) {
+    FullPlayer __get(long id) {
         return playerMap.get(id);
     }
 
-    static FullPlayer __get(AbstractPlayer player) {
+    FullPlayer __get(AbstractPlayer player) {
         return __get(player.id);
     }
 
@@ -77,7 +76,7 @@ public class PlayerProvider {
     /// Returned FullPlayers are copies of original objects that are cached by {@link PlayerProvider}.
     /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
     /// if an instance has been living for long enough for something to have happened to it.
-    static public FullPlayer get(long id) {
+    public FullPlayer get(long id) {
         return new FullPlayer(playerMap.get(id));
     }
 
@@ -91,7 +90,7 @@ public class PlayerProvider {
     /// Returned FullPlayers are copies of original objects which are cached by {@link PlayerProvider}.
     /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
     /// if an instance has been living for long enough for something to have happened to it.
-    static public FullPlayer get(AbstractPlayer player) {
+    public FullPlayer get(AbstractPlayer player) {
         return get(player.id);
     }
 
@@ -101,12 +100,12 @@ public class PlayerProvider {
     /// Returned FullPlayers are copies of original objects that are cached by {@link PlayerProvider}.
     /// Returned objects are also immutable, which means that it is advised to call {@link FullPlayer#refreshCopy()}
     /// if an instance has been living for long enough for something to have happened to it.
-    static public List<FullPlayer> getAllPlayers() {
+    public List<FullPlayer> getAllPlayers() {
         return playerMap.values().stream().map(FullPlayer::new).toList();
     }
 
 
-    private static <T, V> void updateIfChanged(
+    static <T, V> void updateIfChanged(
             T oldObj,
             T newObj,
             Function<T, V> getter,

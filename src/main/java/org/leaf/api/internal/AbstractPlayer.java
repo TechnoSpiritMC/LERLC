@@ -82,6 +82,6 @@ public class AbstractPlayer {
 
     /// Attempts to find the corresponding {@link FullPlayer} object. A fullPlayer encapsulates more data and is cached.
     public FullPlayer getPlayer() {
-        return PlayerProvider.get(this);
+        return Cache.instance.getPlayerProvider().get(this);
     }
 }

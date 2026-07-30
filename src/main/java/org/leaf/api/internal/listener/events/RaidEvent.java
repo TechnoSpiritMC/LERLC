@@ -112,7 +112,7 @@ public class RaidEvent extends Event {
     }
 
     private Triplet<Boolean, Permission, Permission> noPermissionCheck(DataCollector<CommandExecutionProcess> collector) {
-        FullPlayer fp = PlayerProvider.get(command.sender);
+        FullPlayer fp = Cache.instance.getPlayerProvider().get(command.sender);
         return new Triplet<>(fp.getPermission().equals(Permission.CO_OWNER) || fp.getPermission().equals(Permission.OWNER), Permission.CO_OWNER, fp.getPermission());
     }
 }

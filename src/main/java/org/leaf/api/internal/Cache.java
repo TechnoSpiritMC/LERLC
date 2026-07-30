@@ -49,6 +49,8 @@ public class Cache {
 
     private final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
 
+    private final PlayerProvider playerProvider = new PlayerProvider();
+
     /// Flag representing the current state of the lockdown mode.
     final AtomicBoolean lockdown = new AtomicBoolean(false);
     Instant inLockdownSince = Instant.ofEpochMilli(Long.MAX_VALUE);
@@ -193,7 +195,7 @@ public class Cache {
         // System.out.println(dto);
 
         for (var player: dto.Players()) {
-            PlayerProvider.addPlayer(new FullPlayer(player));
+            playerProvider.addPlayer(new FullPlayer(player));
         }
 
         server.getValue().updateFromDTO(dto);
@@ -431,5 +433,14 @@ public class Cache {
         commandExecutor.shutdown();
         instance = null;
         privateInstance = null;
+    }
+
+    /**
+     * Returns the {@link PlayerProvider} instance used by the cache.
+     * @see PlayerProvider
+     * @return The {@link PlayerProvider} instance used by the cache.
+     */
+    public PlayerProvider getPlayerProvider() {
+        return playerProvider;
     }
 }

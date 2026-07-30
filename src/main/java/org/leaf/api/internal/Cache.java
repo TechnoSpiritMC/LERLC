@@ -337,7 +337,7 @@ public class Cache {
         final AtomicBoolean success = new AtomicBoolean(false);
         new Thread(() -> {
             success.set(runCommand(command, collector, priority).first);
-        });
+        }).start();
 
         return success.get();
     }

@@ -45,6 +45,15 @@ public class RemoteCommandBuilder {
      * @param commandName The command name to use.
      */
     public RemoteCommandBuilder setCommand(String commandName) {
+        if (!commandName.startsWith(":")) {
+            if (!commandName.stripLeading().startsWith(":")) {
+                commandName = ":" + commandName;
+            }
+            else {
+                commandName = commandName.stripLeading();
+            }
+        }
+
         this.commandName = commandName.strip();
         return this;
     }
@@ -68,6 +77,22 @@ public class RemoteCommandBuilder {
      * @return The built command.</i>
      */
     public Command build() {
+
+        if (rawCommand == null) {
+            rawCommand = commandName + " " + content;
+        }
+
+        if (commandName == null) {
+            StringBuilder commandNameBuffer = new StringBuilder();
+            for (char c : rawCommand.toCharArray()) {
+                if (c == ' ') {
+                    break;
+                }
+                commandNameBuffer.append(c);
+            }
+            commandName = commandNameBuffer.substring(1);
+        }
+
         command = new Command(rawCommand,
                 commandName,
                 CommandName.resolveCommandName(commandName),

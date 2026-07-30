@@ -18,14 +18,41 @@ import org.leaf.api.internal.CommandExecutionProcess;
  * @see org.leaf.utils.DataCollector DataCollector
  */
 public abstract class CommandCollector implements DataCollector<CommandExecutionProcess> {
+
+    private boolean triggeredPending = false;
+    private boolean triggeredQueued = false;
+    private boolean triggeredExecuting = false;
+    private boolean triggeredFinished = false;
+    private boolean triggeredFailed = false;
+
     @Override
     public final void collect(CommandExecutionProcess process) {
         switch (process.getState()) {
-            case PENDING -> onPending(process);
-            case QUEUED -> onQueued(process);
-            case EXECUTING -> onExecuting(process);
-            case FINISHED -> onFinished(process);
-            case FAILED -> onFailed(process);
+            case PENDING -> {
+                if (triggeredPending) return;
+                onPending(process);
+                triggeredPending = true;
+            }
+            case QUEUED -> {
+                if (triggeredQueued) return;
+                onQueued(process);
+                triggeredQueued = true;
+            }
+            case EXECUTING -> {
+                if (triggeredExecuting) return;
+                onExecuting(process);
+                triggeredExecuting = true;
+            }
+            case FINISHED -> {
+                if (triggeredFinished) return;
+                onFinished(process);
+                triggeredFinished = true;
+            }
+            case FAILED -> {
+                if (triggeredFailed) return;
+                onFailed(process);
+                triggeredFailed = true;
+            }
             case null, default -> onInternalError(process);
         }
     }

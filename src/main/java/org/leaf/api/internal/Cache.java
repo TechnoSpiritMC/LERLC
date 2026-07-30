@@ -81,10 +81,13 @@ public class Cache {
         ctx.testLatency();
 
         initialize();
-        scheduler.scheduleAtFixedRate(this::refresh, 0, 2, java.util.concurrent.TimeUnit.SECONDS);
 
         instance = this;
+        privateInstance = this;
         commandExecutor = new CommandExecutor(this);
+
+        scheduler.scheduleAtFixedRate(this::refresh, 0, 2, java.util.concurrent.TimeUnit.SECONDS);
+        System.out.println("Started scheduler.");
     }
 
     public WrapperConfig getConfig() {
@@ -112,7 +115,6 @@ public class Cache {
     }
 
     private void refresh() {
-
         if (instance != privateInstance) {
             throw new RuntimeException("Cache instance has been externally modified. The cache cannot continue to operate. Terminating...");
         }
